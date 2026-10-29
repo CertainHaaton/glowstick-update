@@ -51,13 +51,15 @@ a.hist:hover{filter:brightness(1.4)}
 }
 
 h1{font-family:"Noto Serif TC","PMingLiU",serif;font-size:30px;color:#2b2a28;letter-spacing:.14em;margin:28px 0 8px}
-.back{margin-left:0}
+a.hist.back{margin-left:0}
+a.hist.back::before{content:"‹";font-size:14px;line-height:1;color:#e8d6aa}
+a.hist.back::after{content:none}
 .list{margin-top:30px;border-top:1px solid #d9d6d0}
 a.row{display:flex;align-items:center;gap:22px;padding:18px 6px;border-bottom:1px solid #d9d6d0;text-decoration:none;color:#2b2a28}
 a.row:hover{background:rgba(255,255,255,.6)}
 .d{font-size:13px;color:#8d8a85;letter-spacing:.06em;flex:none;width:92px}
 .t{font-family:"Noto Serif TC","PMingLiU",serif;font-size:18px;letter-spacing:.06em}
-.new{margin-left:auto;font-size:12px;color:#b08d4c;border:1px solid rgba(176,141,76,.45);padding:0 8px;flex:none}
+.new{margin-left:auto;font-size:11px;color:#e8d6aa;background:#1d1a17;padding:1px 10px;letter-spacing:.12em;flex:none;font-family:"Noto Serif TC","PMingLiU",serif}
 </style></head><body><main>
 <div class="top"><div class="brand">GLOWSTICK PIRATES</div><div class="lang" id="lang"><button type="button" class="lang-btn" id="langBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Language"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.5 4 5.6 4 9s-1.4 6.5-4 9c-2.6-2.5-4-5.6-4-9s1.4-6.5 4-9z"/></svg><span id="langCur"></span><svg class="caret" viewBox="0 0 10 10"><path d="M1.5 3.5L5 7l3.5-3.5"/></svg></button><ul class="lang-menu" id="langMenu" role="listbox"></ul></div></div>
 <h1 id="h"></h1>
