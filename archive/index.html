@@ -7,10 +7,51 @@ body{margin:0;background:#f3f2f0;color:#4a4845;font-family:"Noto Sans TC","Micro
 main{max-width:760px;margin:0 auto;padding:72px 20px 100px}
 .top{display:flex;justify-content:space-between;align-items:center}
 .brand{font-family:"Noto Serif TC","PMingLiU",serif;font-size:11px;letter-spacing:1.2em;color:#b9b5ae}
-.lang{border:1px solid #d9d6d0;background:rgba(255,255,255,.7);padding:4px 10px;font-size:13px}
-.lang select{border:none;background:transparent;font:inherit;outline:none;cursor:pointer}
+/* ===== 共用元件：語言選單、回到頂端、歷史回顧按鈕（首頁與 archive 清單頁共用，build.py／publish.py 內嵌） ===== */
+.lang{position:relative;z-index:30}
+.lang-btn{display:flex;align-items:center;gap:8px;height:34px;padding:0 13px 0 11px;border:1px solid rgba(176,141,76,.55);
+  background:rgba(255,255,255,.75);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);color:#2b2a28;
+  font-family:"Noto Serif TC","Source Han Serif TC","PMingLiU",serif;font-size:13px;letter-spacing:.08em;cursor:pointer;
+  transition:background .2s,color .2s,border-color .2s}
+.lang-btn:hover,.lang.open .lang-btn{background:#1d1a17;color:#e8d6aa;border-color:#b08d4c}
+.lang-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.4;flex:none}
+.lang-btn .caret{width:10px;height:10px;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;overflow:visible;transition:transform .2s}
+.lang.open .lang-btn .caret{transform:rotate(180deg)}
+.lang-menu{position:absolute;right:0;top:calc(100% + 6px);min-width:168px;margin:0;padding:8px 0;list-style:none;
+  background:linear-gradient(165deg,#1f1b17 0%,#2b241c 100%);border:1px solid rgba(176,141,76,.6);
+  box-shadow:0 14px 34px rgba(0,0,0,.28);opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .18s,transform .18s}
+.lang-menu::before{content:"";position:absolute;left:14px;right:14px;top:0;height:1px;background:linear-gradient(90deg,transparent,#d8bd84,transparent)}
+.lang.open .lang-menu{opacity:1;transform:none;pointer-events:auto}
+.lang-menu li{position:relative;padding:9px 20px 9px 32px;color:#c9bea7;font-family:"Noto Serif TC","Source Han Serif TC","PMingLiU",serif;
+  font-size:14px;letter-spacing:.08em;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
+.lang-menu li:hover,.lang-menu li:focus{background:rgba(216,189,132,.12);color:#fff;outline:none}
+.lang-menu li.on{color:#e8c98a}
+.lang-menu li.on::before{content:"◆";position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:8px;color:#d8bd84}
+
+a.hist{display:inline-flex;align-items:center;gap:7px;margin-left:16px;padding:3px 17px 3px 15px;
+  background:linear-gradient(100deg,#15120f 0%,#2e271f 58%,#5f4c2d 100%);color:#e8d6aa;text-decoration:none;
+  font-family:"Noto Serif TC","Source Han Serif TC","PMingLiU",serif;font-size:12px;letter-spacing:.14em;line-height:1.9;
+  clip-path:polygon(7px 0,100% 0,calc(100% - 7px) 100%,0 100%);transition:filter .2s}
+a.hist::before{content:"◆";font-size:7px;color:#d8bd84}
+a.hist::after{content:"›";font-size:14px;line-height:1;margin-left:1px}
+a.hist:hover{filter:brightness(1.4)}
+
+.totop{position:fixed;right:28px;bottom:28px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;
+  z-index:20;text-decoration:none;opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity .25s,transform .25s}
+.totop.show{opacity:1;pointer-events:auto;transform:none}
+.totop::before{content:"";position:absolute;inset:8px;transform:rotate(45deg);background:linear-gradient(135deg,#2b241c,#16130f);
+  border:1px solid #b08d4c;box-shadow:0 6px 16px rgba(0,0,0,.22);transition:background .2s,box-shadow .2s}
+.totop:hover::before{background:linear-gradient(135deg,#6b5532,#2b241c);box-shadow:0 0 0 4px rgba(216,189,132,.2),0 6px 16px rgba(0,0,0,.22)}
+.totop svg{position:relative;width:14px;height:14px;stroke:#e8d6aa;fill:none;stroke-width:2;margin-top:-2px}
+
+@media (max-width:900px){
+  .lang-btn{height:32px;padding:0 10px}
+  a.hist{margin-left:10px}
+  .totop{right:16px;bottom:16px}
+}
+
 h1{font-family:"Noto Serif TC","PMingLiU",serif;font-size:30px;color:#2b2a28;letter-spacing:.14em;margin:28px 0 8px}
-.back{color:#b08d4c;text-decoration:none;font-size:14px}
+.back{margin-left:0}
 .list{margin-top:30px;border-top:1px solid #d9d6d0}
 a.row{display:flex;align-items:center;gap:22px;padding:18px 6px;border-bottom:1px solid #d9d6d0;text-decoration:none;color:#2b2a28}
 a.row:hover{background:rgba(255,255,255,.6)}
@@ -18,22 +59,57 @@ a.row:hover{background:rgba(255,255,255,.6)}
 .t{font-family:"Noto Serif TC","PMingLiU",serif;font-size:18px;letter-spacing:.06em}
 .new{margin-left:auto;font-size:12px;color:#b08d4c;border:1px solid rgba(176,141,76,.45);padding:0 8px;flex:none}
 </style></head><body><main>
-<div class="top"><div class="brand">GLOWSTICK PIRATES</div><label class="lang">🌐 <select id="langSel" aria-label="Language"></select></label></div>
+<div class="top"><div class="brand">GLOWSTICK PIRATES</div><div class="lang" id="lang"><button type="button" class="lang-btn" id="langBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Language"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.5 4 5.6 4 9s-1.4 6.5-4 9c-2.6-2.5-4-5.6-4-9s1.4-6.5 4-9z"/></svg><span id="langCur"></span><svg class="caret" viewBox="0 0 10 10"><path d="M1.5 3.5L5 7l3.5-3.5"/></svg></button><ul class="lang-menu" id="langMenu" role="listbox"></ul></div></div>
 <h1 id="h"></h1>
-<a class="back" href="../" id="back"></a>
+<a class="hist back" href="../" id="back"></a>
 <div class="list" id="list"></div>
 </main>
+<script>
+// ===== 共用元件：自製語言下拉選單＋回到頂端（首頁與 archive 清單頁共用，build.py／publish.py 內嵌） =====
+// 用法：initLangMenu(langs, current, onPick)；langs＝[{code,label}]，onPick(code) 由頁面負責套用與存 localStorage。
+//       setLangMenu(code) 更新按鈕文字與選中標記。
+function initLangMenu(langs, onPick) {
+  var box = document.getElementById('lang'), btn = document.getElementById('langBtn'), menu = document.getElementById('langMenu');
+  langs.forEach(function (x) {
+    var li = document.createElement('li');
+    li.textContent = x.label; li.setAttribute('data-code', x.code); li.setAttribute('role', 'option'); li.tabIndex = -1;
+    li.addEventListener('click', function () { close(); onPick(x.code); });
+    li.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); li.click(); }
+      if (e.key === 'ArrowDown' && li.nextSibling) { e.preventDefault(); li.nextSibling.focus(); }
+      if (e.key === 'ArrowUp' && li.previousSibling) { e.preventDefault(); li.previousSibling.focus(); }
+    });
+    menu.appendChild(li);
+  });
+  function open() { box.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); var on = menu.querySelector('.on') || menu.firstChild; if (on) on.focus(); }
+  function close() { box.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
+  btn.addEventListener('click', function (e) { e.stopPropagation(); box.classList.contains('open') ? close() : open(); });
+  document.addEventListener('click', function (e) { if (!box.contains(e.target)) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { close(); btn.focus(); } });
+}
+function setLangMenu(code, label) {
+  document.getElementById('langCur').textContent = label;
+  [].forEach.call(document.querySelectorAll('#langMenu li'), function (li) {
+    var on = li.getAttribute('data-code') === code; li.classList.toggle('on', on); li.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+}
+(function () {
+  var t = document.querySelector('.totop'); if (!t) return;
+  function upd() { t.classList.toggle('show', window.scrollY > 500); }
+  window.addEventListener('scroll', upd, { passive: true }); upd();
+})();
+
+</script>
 <script>
 var EDS = [{"date": "2026-10-29", "title": {"tw": "試玩版後更新・開發進度", "cn": "试玩版后更新・开发进度", "en": "Post-Demo Update・Development Progress", "ja": "体験版以降のアップデート・開発状況", "ko": "체험판 이후 업데이트・개발 현황", "ru": "Обновления после демо・Ход разработки"}, "file": "2026-10-29.html"}], LBL = {"hist": {"tw": "歷史回顧", "cn": "历史回顾", "en": "Past Updates", "ja": "過去の更新", "ko": "지난 업데이트", "ru": "Архив"}, "back_latest": {"tw": "‹ 回到最新一期", "cn": "‹ 回到最新一期", "en": "‹ Back to latest", "ja": "‹ 最新号へ戻る", "ko": "‹ 최신 호로 돌아가기", "ru": "‹ К последнему выпуску"}, "latest": {"tw": "最新", "cn": "最新", "en": "Latest", "ja": "最新", "ko": "최신", "ru": "Новое"}, "title": {"tw": "閃光雞雞海賊團 | 更新週報", "cn": "闪光鸡鸡海贼团 | 更新周报", "en": "Glowstick Pirates | Weekly Update", "ja": "ピカチン海賊団 | アップデート週報", "ko": "Glowstick Pirates | 주간 업데이트", "ru": "Glowstick Pirates | Еженедельное обновление"}}, LANGS = [{"code": "tw", "label": "繁體中文", "html": "zh-Hant-TW"}, {"code": "cn", "label": "简体中文", "html": "zh-Hans-CN"}, {"code": "en", "label": "English", "html": "en"}, {"code": "ja", "label": "日本語", "html": "ja"}, {"code": "ko", "label": "한국어", "html": "ko"}, {"code": "ru", "label": "Русский", "html": "ru"}], KEY = 'gp_lang';
 function detect(){var a=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||'en'];for(var i=0;i<a.length;i++){var l=(a[i]||'').toLowerCase();if(/^zh-(tw|hk|mo)|^zh-hant/.test(l))return'tw';if(/^zh/.test(l))return'cn';if(/^ja/.test(l))return'ja';if(/^ko/.test(l))return'ko';if(/^(ru|uk|be|kk)/.test(l))return'ru';if(/^en/.test(l))return'en';}return'en';}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function render(lang){
-  document.title=LBL.title[lang]; document.getElementById('h').textContent=LBL.hist[lang]; document.getElementById('back').textContent=LBL.back_latest[lang];
+  document.title=LBL.title[lang]; document.getElementById('h').textContent=LBL.hist[lang]; document.getElementById('back').textContent=LBL.back_latest[lang].replace(/^‹ */,"");
   document.getElementById('list').innerHTML=EDS.map(function(e,i){return '<a class="row" href="'+e.file+'"><span class="d">'+e.date.replace(/-/g,'.')+'</span><span class="t">'+esc(e.title[lang]||e.title.tw)+'</span>'+(i===0?'<span class="new">'+LBL.latest[lang]+'</span>':'')+'</a>';}).join('');
-  var m=LANGS.filter(function(x){return x.code===lang;})[0]; document.documentElement.lang=m?m.html:lang; document.getElementById('langSel').value=lang;
+  var m=LANGS.filter(function(x){return x.code===lang;})[0]; document.documentElement.lang=m?m.html:lang; setLangMenu(lang, m?m.label:lang);
 }
-var sel=document.getElementById('langSel'); LANGS.forEach(function(x){var o=document.createElement('option');o.value=x.code;o.textContent=x.label;sel.appendChild(o);});
+initLangMenu(LANGS,function(c){try{localStorage.setItem(KEY,c);}catch(e){}render(c);});
 var saved=null; try{saved=localStorage.getItem(KEY);}catch(e){}
 render(saved&&LBL.title[saved]?saved:detect());
-sel.addEventListener('change',function(){try{localStorage.setItem(KEY,sel.value);}catch(e){}render(sel.value);});
 </script></body></html>
