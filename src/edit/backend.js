@@ -8,7 +8,10 @@
   var OWNER = 'CertainHaaton', REPO = 'glowstick-update';
   var BRANCH = (/[?&]branch=([\w.\/-]+)/.exec(location.search) || [])[1] || 'main';  // 測試用 ?branch=xxx
   var API = 'https://api.github.com/repos/' + OWNER + '/' + REPO;
-  var TOKEN_KEY = 'gp_ghToken', DATE_RE = /^\d{4}-\d\d-\d\d$/;
+  // 期數代號＝日期；同一天第二篇起加 -2、-3…（例 2026-10-30-2），排序時同一天依序號
+  var TOKEN_KEY = 'gp_ghToken', DATE_RE = /^\d{4}-\d\d-\d\d(-([2-9]|[1-9]\d))?$/;
+  function edKey(d) { var m = /^(.{10})(?:-(\d+))?$/.exec(d) || [d, d]; return m[1] + '-' + ('00' + (m[2] || 1)).slice(-3); }
+  function newestFirst(a, b) { a = edKey(a); b = edKey(b); return a < b ? 1 : a > b ? -1 : 0; }
   var MIME = { '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.gif': 'image/gif', '.mp4': 'video/mp4', '.webm': 'video/webm' };
   var SE = window.StructEdit;
 
@@ -102,8 +105,8 @@
   }
   function publishedDates() {
     var ds = {};
-    Object.keys(head.entries).forEach(function (p) { var m = /^src\/editions\/(\d{4}-\d\d-\d\d)\/template\.html$/.exec(p); if (m) ds[m[1]] = 1; });
-    return Object.keys(ds).sort().reverse();
+    Object.keys(head.entries).forEach(function (p) { var m = /^src\/editions\/([\d-]+)\/template\.html$/.exec(p); if (m && DATE_RE.test(m[1])) ds[m[1]] = 1; });
+    return Object.keys(ds).sort(newestFirst);
   }
   function loadShared() {
     if (shared) return Promise.resolve(shared);
@@ -258,7 +261,7 @@
       var pub = publishedDates(), ds = {};
       pub.forEach(function (d) { ds[d] = 1; });
       drs.forEach(function (d) { if (d.isNew) ds[d.date] = 1; });
-      var dates = Object.keys(ds).sort().reverse();
+      var dates = Object.keys(ds).sort(newestFirst);
       return Promise.all(dates.map(function (d) {
         var dr = drs.filter(function (x) { return x.date === d; })[0];
         return (dr && dr.isNew ? Promise.resolve(String(dr.cur.i18n.t.h1 && dr.cur.i18n.t.h1.tw || '').replace(/<[^>]+>/g, '')) : editionTitle(d)).then(function (t) {
@@ -275,12 +278,12 @@
   }
   function newEdition(date) {
     date = date || new Date().toISOString().slice(0, 10);
-    if (!DATE_RE.test(date)) return Promise.reject(new Error('日期格式要像 2026-11-06'));
+    if (!DATE_RE.test(date)) return Promise.reject(new Error('日期格式要像 2026-11-06（同一天第二篇：2026-11-06-2）'));
     return saveDraft().then(allDrafts).then(function (drs) {
       if (publishedDates().indexOf(date) >= 0 || drs.some(function (d) { return d.date === date; })) throw new Error('已經有 ' + date + ' 這一期了');
       var st = clone(E.cur);
       SE.newEdition(st, date);
-      st.meta = { updated: date.replace(/-/g, '.'), draft: false };
+      st.meta = { updated: date.slice(0, 10).replace(/-/g, '.'), draft: false };
       E = { date: date, isNew: true, baseCommit: head.commit, base: clone(st), cur: st, undo: [] };
       E.base.files = {};
       return saveDraft();

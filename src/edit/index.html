@@ -86,7 +86,8 @@ button:hover{filter:brightness(1.15)}
       var f = $('page');
       f.srcdoc = html;
       f.style.display = 'block'; $('gate').style.display = 'none'; $('logout').style.display = 'block';
-      document.title = '編輯 ' + B.current().date.replace(/-/g, '.') + '｜閃光雞雞海賊團';
+      var d = B.current().date;
+      document.title = '編輯 ' + d.slice(0, 10).replace(/-/g, '.') + (d.length > 10 ? ' #' + d.slice(11) : '') + '｜閃光雞雞海賊團';
     });
   }
   window.edRender = function () { render().catch(fail); };

@@ -13,7 +13,16 @@ EDS = ROOT / "src" / "editions"
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
 import structedit as se  # noqa: E402
 
-DATE_RE = re.compile(r"\d{4}-\d\d-\d\d$")
+# 期數代號＝日期；同一天第二篇起加 -2、-3…（例 2026-10-30-2），排序時同一天依序號
+DATE_RE = re.compile(r"\d{4}-\d\d-\d\d(-([2-9]|[1-9]\d))?$")
+
+
+def ed_key(name):
+    return (name[:10], int(name[11:] or 1))
+
+
+def ed_label(name):
+    return name[:10].replace("-", ".") + (" #" + name[11:] if len(name) > 10 else "")
 
 
 def git(*a, check=True):
@@ -27,7 +36,7 @@ def meta(d):
 
 
 def dates():
-    return sorted([p.name for p in EDS.iterdir() if p.is_dir() and DATE_RE.match(p.name) and (p / "template.html").exists()], reverse=True)
+    return sorted([p.name for p in EDS.iterdir() if p.is_dir() and DATE_RE.match(p.name) and (p / "template.html").exists()], key=ed_key, reverse=True)
 
 
 def published():
@@ -40,9 +49,12 @@ def point_to(d):
 
 
 def new(d):
-    d = d or datetime.date.today().isoformat()
+    if not d:  # 沒指定：今天；今天已經有了就自動接 -2、-3…
+        d, n = datetime.date.today().isoformat(), 2
+        while d in dates():
+            d, n = d[:10] + "-%d" % n, n + 1
     if not DATE_RE.match(d):
-        sys.exit("日期格式要像 2026-11-06")
+        sys.exit("日期格式要像 2026-11-06（同一天第二篇：2026-11-06-2）")
     if d in dates():
         sys.exit("已經有 %s 這一期了" % d)
     base = published()[0]
@@ -74,7 +86,7 @@ def new(d):
     text, _ = se.new_block("section", ind, nl, dd)
     s = se.put(s, at, text)
     langs = [L["code"] for L in dd["langs"]]
-    dd["t"]["h1"] = {L: ("開發週報<i>・</i>" + d.replace("-", ".") if L == "tw" else "") for L in langs}
+    dd["t"]["h1"] = {L: ("開發週報<i>・</i>" + ed_label(d) if L == "tw" else "") for L in langs}
     if first:
         dd["t"][first] = {L: ("以下整理本週的主要更新內容。" if L == "tw" else "") for L in langs}
     se.save(se.tidy(s), dd)
@@ -86,7 +98,7 @@ def new(d):
     for f in list((dst / "img").iterdir()):
         if f.is_file() and f.stem not in used:
             f.unlink()  # 這是剛複製出來的副本，上一期的原檔不受影響
-    (dst / "edition.json").write_text(json.dumps({"updated": d.replace("-", "."), "draft": True}, ensure_ascii=False, indent=1), encoding="utf-8")
+    (dst / "edition.json").write_text(json.dumps({"updated": d[:10].replace("-", "."), "draft": True}, ensure_ascii=False, indent=1), encoding="utf-8")
     print("已開新的一期（草稿，還不會公開）：src/editions/%s/" % d)
 
 

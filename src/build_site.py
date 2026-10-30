@@ -14,13 +14,18 @@ from render import render  # noqa: E402
 from archive_index import archive_index  # noqa: E402
 
 OUT = ROOT / (sys.argv[1] if len(sys.argv) > 1 else "_site")
-DATE_RE = re.compile(r"\d{4}-\d\d-\d\d$")
+# 期數代號＝日期；同一天第二篇起加 -2、-3…（例 2026-10-30-2），排序時同一天依序號
+DATE_RE = re.compile(r"\d{4}-\d\d-\d\d(-([2-9]|[1-9]\d))?$")
+
+
+def ed_key(name):
+    return (name[:10], int(name[11:] or 1))
 
 
 def meta(d):
     f = d / "edition.json"
     m = json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
-    m.setdefault("updated", d.name.replace("-", "."))
+    m.setdefault("updated", d.name[:10].replace("-", "."))
     m.setdefault("draft", False)
     return m
 
@@ -28,7 +33,7 @@ def meta(d):
 def main():
     eds_dir = SRC / "editions"
     dirs = sorted([d for d in eds_dir.iterdir() if d.is_dir() and DATE_RE.match(d.name) and (d / "template.html").exists()],
-                  key=lambda d: d.name, reverse=True)
+                  key=lambda d: ed_key(d.name), reverse=True)
     pub = [d for d in dirs if not meta(d)["draft"]]
     if not pub:
         sys.exit("沒有任何可公開的期數")

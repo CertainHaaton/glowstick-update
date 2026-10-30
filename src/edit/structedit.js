@@ -259,7 +259,7 @@
     var ip = insertPoint(s, 'section', firstLead || 'h1'), r = newBlock('section', ip[1], nl, d);
     s = put(s, ip[0], r[0]);
     var langs = d.langs.map(function (L) { return L.code; });
-    if (d.t.h1) { d.t.h1 = {}; langs.forEach(function (c) { d.t.h1[c] = c === 'tw' ? '開發週報<i>・</i>' + date.replace(/-/g, '.') : ''; }); }
+    if (d.t.h1) { d.t.h1 = {}; langs.forEach(function (c) { d.t.h1[c] = c === 'tw' ? '開發週報<i>・</i>' + date.slice(0, 10).replace(/-/g, '.') + (date.length > 10 ? ' #' + date.slice(11) : '') : ''; }); }
     if (firstLead) { d.t[firstLead] = {}; langs.forEach(function (c) { d.t[firstLead][c] = c === 'tw' ? '以下整理本週的主要更新內容。' : ''; }); }
     st.template = tidy(s);
     // 媒體：只留版型還用得到的（主視覺、網站圖示等）

@@ -43,7 +43,7 @@ function setLangMenu(code, label) {
     }
     if (localStorage.getItem(KEY) !== '1' || window.frameElement) return;  // 編輯器裡面預覽時不顯示
     var box = document.getElementById('lang'); if (!box) return;
-    var d = /\/archive\/(\d{4}-\d\d-\d\d)\.html/.exec(location.pathname), inArc = /\/archive\//.test(location.pathname);
+    var d = /\/archive\/(\d{4}-\d\d-\d\d(?:-\d+)?)\.html/.exec(location.pathname), inArc = /\/archive\//.test(location.pathname);
     var a = document.createElement('a');
     a.className = 'hist edit'; a.textContent = '修改';
     a.href = (inArc ? '../' : '') + 'edit/' + (d ? '?edition=' + d[1] : inArc ? '' : '?edition=latest');

@@ -623,7 +623,8 @@
   // ---------- 文章（期數）：切換／新增／刪除（伺服器 editions.py） ----------
   // 每一期有自己的原始檔；編輯器一次只編一期。換期數前，目前這期不能有還沒發布的改動（先發布或捨棄）。
   var EDL = null;
-  function fmtDate(d) { return d ? d.replace(/-/g, '.') : ''; }
+  // 期數代號＝日期，同一天第二篇起是 2026-10-30-2 → 顯示「2026.10.30 #2」
+  function fmtDate(d) { return d ? d.slice(0, 10).replace(/-/g, '.') + (d.length > 10 ? ' #' + d.slice(11) : '') : ''; }
   function loadEditions() {
     return api('/api/editions').then(function (L) {
       EDL = L;
@@ -666,12 +667,18 @@
   }
   function edSwitch(d) { edClean(function () { edOp('switch', d, '切換到 ' + fmtDate(d)); }, '換到 ' + fmtDate(d)); }
   function edNew() {
+    // 預設今天；今天已經有了就自動接 -2、-3…（同一天可以發好幾篇）
+    var used = {}; ((EDL && EDL.editions) || []).forEach(function (e) { used[e.date] = 1; });
+    var def = today(), n = 2; if (used[def]) { while (used[today() + '-' + n]) n++; def = today() + '-' + n; }
     var bd = dialog('新增文章', '以目前這期的版型當底，內容區清空成一個空分類，大標題換成新的日期',
-      '<div class="row"><label for="ed-newdate">日期</label><input type="text" id="ed-newdate" value="' + today() + '" placeholder="例如 2026-11-06"></div>' +
-      '<div class="hint">新文章先不會公開，寫好按「發布」才會出現在網站上（並成為首頁的最新一期）。</div>',
+      '<div class="row"><label for="ed-newdate">日期</label><input type="text" id="ed-newdate" value="' + def + '" placeholder="例如 2026-11-06"></div>' +
+      '<div class="hint">同一天要發第二篇，日期後面加 -2（例 2026-11-06-2），第三篇 -3，以此類推。<br>新文章先不會公開，寫好按「發布」才會出現在網站上（並成為首頁的最新一期）。</div>',
       [{ text: '取消' }, { text: '建立', pri: true, fn: function () {
-        var d = $('ed-newdate').value.trim();
-        if (!/^\d{4}-\d\d-\d\d$/.test(d)) { toast('日期格式要像 2026-11-06', true); return false; }
+        // 「2026-10-30 2」「2026-10-30_2」都當成 2026-10-30-2；-1 等於沒加
+        var m = /^(\d{4}-\d\d-\d\d)(?:[\s_-]+(\d{1,2}))?$/.exec($('ed-newdate').value.trim());
+        if (!m || (m[2] && +m[2] < 1)) { toast('日期格式要像 2026-11-06（同一天第二篇：2026-11-06-2）', true); return false; }
+        var d = m[1] + (m[2] && +m[2] > 1 ? '-' + (+m[2]) : '');
+        if (used[d]) { toast('已經有 ' + fmtDate(d) + ' 這一期了', true); return false; }
         setTimeout(function () { edClean(function () { edOp('new', d, '已新增 ' + fmtDate(d)); }, '新增文章'); }, 30);
       } }]);
   }
