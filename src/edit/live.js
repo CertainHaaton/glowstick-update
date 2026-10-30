@@ -870,6 +870,8 @@
       if (e.target.closest('#ed-ui')) return;
       if (!e.target.closest('#ed-menu')) closeMenu();
       if (editing && editing.contains(e.target)) return;
+      // 「回到頂端」照常能用：自己捲（網頁版在 iframe 裡，#top 連結會被解析成編輯器網址，不能讓它真的跳）
+      if (e.target.closest('.totop')) { e.preventDefault(); e.stopPropagation(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
       var el = pick(e.clientX, e.clientY);
       if (el || e.target.closest('a')) { if (!e.target.closest('.lang')) { e.preventDefault(); e.stopPropagation(); } }
       if (el) select(el);
