@@ -108,6 +108,22 @@
     Object.keys(head.entries).forEach(function (p) { var m = /^src\/editions\/([\d-]+)\/template\.html$/.exec(p); if (m && DATE_RE.test(m[1])) ds[m[1]] = 1; });
     return Object.keys(ds).sort(newestFirst);
   }
+  // 首頁是哪一期：src/site.json 的 home；沒設或那期不存在就是最新一期（跟 build_site.py 同規則）
+  var siteSha = null, siteHome = null;
+  function refreshSite() {
+    var e = head && head.entries['src/site.json'];
+    if (!e) { siteHome = null; siteSha = null; return Promise.resolve(); }
+    if (e.sha === siteSha) return Promise.resolve();
+    return readBlobText(e.sha).then(function (t) { try { siteHome = JSON.parse(t).home || null; } catch (x) { siteHome = null; } siteSha = e.sha; });
+  }
+  function homeDate() { var pub = publishedDates(); return pub.indexOf(siteHome) >= 0 ? siteHome : pub[0]; }
+  function siteJSON(date) { return { path: 'src/site.json', mode: '100644', type: 'blob', content: JSON.stringify({ home: date }, null, 1) + '\n' }; }
+  function setHome(date) {
+    if (publishedDates().indexOf(date) < 0) return Promise.reject(new Error('這一期還沒發布，發布後才能設為首頁'));
+    function go() { return commitFiles([siteJSON(date)], '首頁改成 ' + date); }
+    return go().catch(function (e) { if (e.status === 422) return go(); throw e; })
+      .then(function (sha) { watchBuild(sha); return loadHead(); }).then(refreshSite);
+  }
   function loadShared() {
     if (shared) return Promise.resolve(shared);
     return Promise.all(['src/site/ui.css', 'src/site/ui.js'].map(function (p) { return readBlobText(head.entries[p].sha); }))
@@ -198,6 +214,8 @@
       if (c && !window.confirm(c + '。\n\n仍要用你的版本蓋過去嗎？（按「取消」就先不發布）')) throw new Error(c + '，已取消發布');
       var pre = edPath(E.date), cur = E.cur, entries = [];
       cur.meta = Object.assign({}, cur.meta || {}, { updated: nowStr(), draft: false });
+      // 發布不會搶首頁：還沒有 site.json 時，順便把「目前的首頁」釘住（不然新的一期會變成最新而取代首頁）
+      if (!head.entries['src/site.json'] && publishedDates().length) entries.push(siteJSON(homeDate()));
       entries.push({ path: pre + 'template.html', mode: '100644', type: 'blob', content: cur.template });
       entries.push({ path: pre + 'i18n.json', mode: '100644', type: 'blob', content: JSON.stringify(cur.i18n, null, 1) });
       entries.push({ path: pre + 'i18n_src.json', mode: '100644', type: 'blob', content: JSON.stringify(cur.i18nSrc || {}, null, 1) });
@@ -258,7 +276,7 @@
     return readBlobText(p.sha).then(function (t) { var d = JSON.parse(t); return (titleCache[date] = String(d.t.h1 && d.t.h1.tw || '').replace(/<[^>]+>/g, '')); });
   }
   function listing() {
-    return allDrafts().then(function (drs) {
+    return refreshSite().then(allDrafts).then(function (drs) {
       var pub = publishedDates(), ds = {};
       pub.forEach(function (d) { ds[d] = 1; });
       drs.forEach(function (d) { if (d.isNew) ds[d.date] = 1; });
@@ -268,12 +286,12 @@
         return (dr && dr.isNew ? Promise.resolve(String(dr.cur.i18n.t.h1 && dr.cur.i18n.t.h1.tw || '').replace(/<[^>]+>/g, '')) : editionTitle(d)).then(function (t) {
           return { date: d, title: t, published: pub.indexOf(d) >= 0, active: E && d === E.date, editable: true, draft: !!dr };
         });
-      })).then(function (eds) { return { active: E && E.date, latest: pub[0] || null, editions: eds }; });
+      })).then(function (eds) { return { active: E && E.date, home: homeDate() || null, editions: eds }; });
     });
   }
   function switchTo(date) {
     return saveDraft().then(function () {
-      if (date === 'latest') date = publishedDates()[0];
+      if (date === 'latest') date = homeDate();
       return openEdition(date);
     });
   }
@@ -303,7 +321,7 @@
         p = commitFiles(entries, '刪除 ' + date + ' 這一期').then(function (sha) { watchBuild(sha); });
       }
       return p.then(function () { return dropDraft(date); }).then(loadHead).then(function () {
-        if (E && E.date === date) { E = null; return openEdition(publishedDates()[0]); }
+        if (E && E.date === date) { E = null; return openEdition(homeDate()); }
       });
     });
   }
@@ -350,7 +368,7 @@
     'POST /api/publish': function (b) { return publish(b.msg).catch(function (e) { return { ok: false, log: '發布失敗：' + e.message }; }); },
     'GET /api/editions': function () { return listing().then(function (L) { return Object.assign({ ok: true }, L); }); },
     'POST /api/editions': function (b) {
-      var p = b.op === 'switch' ? switchTo(b.date) : b.op === 'new' ? newEdition(b.date) : b.op === 'delete' ? deleteEdition(b.date) : Promise.reject(new Error('不認得的操作'));
+      var p = b.op === 'switch' ? switchTo(b.date) : b.op === 'new' ? newEdition(b.date) : b.op === 'delete' ? deleteEdition(b.date) : b.op === 'home' ? setHome(b.date) : Promise.reject(new Error('不認得的操作'));
       return p.then(listing).then(function (L) { history.replaceState(null, '', location.pathname + (BRANCH !== 'main' ? '?branch=' + BRANCH : '')); return Object.assign({ ok: true }, L); })
         .catch(function (e) { return { ok: false, error: e.message }; });
     }
@@ -381,13 +399,13 @@
       return gh('').then(function (r) { return { push: !!(r.permissions && r.permissions.push) }; });
     },
     start: function (want) {
-      return loadHead().then(function () {
+      return loadHead().then(refreshSite).then(function () {
         var pub = publishedDates();
         if (!pub.length) throw new Error('GitHub 上找不到任何一期（src/editions/）');
-        var d = want && want !== 'latest' ? want : pub[0];
+        var d = want && want !== 'latest' ? want : homeDate();
         // 共用檔（ui.css／ui.js）跟這一期的檔案同時抓
         return Promise.all([loadShared(), allDrafts().then(function (drs) {
-          if (pub.indexOf(d) < 0 && !drs.some(function (x) { return x.date === d; })) d = pub[0];
+          if (pub.indexOf(d) < 0 && !drs.some(function (x) { return x.date === d; })) d = homeDate();
           return openEdition(d);
         })]);
       });
@@ -396,10 +414,10 @@
     edFetch: edFetch,
     mediaURL: function (n) { return mediaURL(n); },
     current: function () { return E; },
-    // 「返回」要去的網站頁（相對 edit/）：最新一期＝首頁、其他已發布的＝archive/<日期>.html、還沒發布的新期數＝首頁
+    // 「返回」要去的網站頁（相對 edit/）：首頁那期＝首頁、其他已發布的＝archive/<日期>.html、還沒發布的新期數＝首頁
     siteURL: function () {
-      var pub = head ? publishedDates() : [], i = E ? pub.indexOf(E.date) : -1;
-      return i > 0 ? '../archive/' + E.date + '.html' : '../';
+      var pub = head ? publishedDates() : [];
+      return E && pub.indexOf(E.date) >= 0 && E.date !== homeDate() ? '../archive/' + E.date + '.html' : '../';
     }
   };
 })();

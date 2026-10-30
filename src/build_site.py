@@ -2,7 +2,7 @@
 #   src/editions/<日期>/      每一期的原始檔：template.html、i18n.json、i18n_src.json、img/、edition.json
 #   src/site/                 共用：render.py（組網頁）、archive_index.py（歷史回顧清單）、ui.css、ui.js
 #   src/edit/                 網頁編輯器（照原樣複製到 _site/edit/）
-# 產物：index.html（最新一期）、archive/<日期>.html、archive/editions.json、archive/index.html、edit/
+# 產物：index.html（首頁那期：src/site.json 的 home，沒設就用最新一期）、archive/<日期>.html、archive/editions.json、archive/index.html、edit/
 # edition.json：{"updated": "2026.10.30 10:24", "draft": false}；draft＝true 的期數不公開。
 # 本機預覽：python src/build_site.py → 開 _site/index.html。
 import base64, json, pathlib, re, shutil, sys
@@ -40,21 +40,25 @@ def main():
     if OUT.exists():
         shutil.rmtree(OUT)
     (OUT / "archive").mkdir(parents=True)
+    # 首頁是哪一期：src/site.json 的 home（網頁版編輯器「設為首頁」寫的）；沒設或那期不存在／未公開就用最新一期
+    sf = SRC / "site.json"
+    want = json.loads(sf.read_text(encoding="utf-8")).get("home") if sf.exists() else None
+    home = next((d for d in pub if d.name == want), pub[0])
     eds, problems = [], []
-    for i, d in enumerate(pub):
+    for d in pub:
         m = meta(d)
         i18n = json.loads((d / "i18n.json").read_text(encoding="utf-8"))
         page, missing = render(d, m["updated"], "./")
         if missing:
             problems.append("%s 缺少媒體：%s" % (d.name, "、".join(missing)))
         (OUT / "archive" / (d.name + ".html")).write_text(page, encoding="utf-8")
-        if i == 0:  # 最新一期＝首頁
+        if d is home:
             (OUT / "index.html").write_text(render(d, m["updated"], "archive/")[0], encoding="utf-8")
-        eds.append({"date": d.name, "file": d.name + ".html",
+        eds.append({"date": d.name, "file": d.name + ".html", "home": d is home,
                     "title": {k: re.sub(r"<[^>]+>", "", v).strip() for k, v in i18n["t"]["h1"].items()}})
         print("第 %s 期 OK（%.1f MB）" % (d.name, len(page.encode("utf-8")) / 1048576))
     (OUT / "archive" / "editions.json").write_text(json.dumps(eds, ensure_ascii=False, indent=1), encoding="utf-8")
-    latest = pub[0]
+    latest = home
     fav = latest / "img" / "favicon.png"
     fav_tag = '<link rel="icon" type="image/png" href="data:image/png;base64,%s">' % base64.b64encode(fav.read_bytes()).decode() if fav.exists() else ""
     (OUT / "archive" / "index.html").write_text(archive_index(

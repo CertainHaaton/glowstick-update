@@ -671,7 +671,7 @@
     var def = today(), n = 2; if (used[def]) { while (used[today() + '-' + n]) n++; def = today() + '-' + n; }
     var bd = dialog('新增文章', '以目前這期的版型當底，內容區清空成一組空的分類標題＋小標題＋段落，大標題換成新的日期',
       '<div class="row"><label for="ed-newdate">日期</label><input type="text" id="ed-newdate" value="' + def + '" placeholder="例如 2026-11-06"></div>' +
-      '<div class="hint">同一天要發第二篇，日期後面加 -2（例 2026-11-06-2），第三篇 -3，以此類推。<br>新文章先不會公開，寫好按「發布」才會出現在網站上（並成為首頁的最新一期）。</div>',
+      '<div class="hint">同一天要發第二篇，日期後面加 -2（例 2026-11-06-2），第三篇 -3，以此類推。<br>新文章先不會公開，寫好按「發布」才會出現在網站的歷史回顧；不會自動換首頁，要當首頁請到「文章」清單按「設為首頁」。</div>',
       [{ text: '取消' }, { text: '建立', pri: true, fn: function () {
         // 「2026-10-30 2」「2026-10-30_2」都當成 2026-10-30-2；-1 等於沒加
         var m = /^(\d{4}-\d\d-\d\d)(?:[\s_-]+(\d{1,2}))?$/.exec($('ed-newdate').value.trim());
@@ -681,11 +681,27 @@
         setTimeout(function () { edClean(function () { edOp('new', d, '已新增 ' + fmtDate(d)); }, '新增文章'); }, 30);
       } }]);
   }
+  function edHome(e) {
+    dialog('把 ' + fmtDate(e.date) + ' 設為首頁？', '「' + e.title + '」',
+      '<div class="hint" style="font-size:13.5px;color:#e8dcc2;line-height:2">◆ 公開網站的首頁會換成這一期，馬上推送到 GitHub，約 1 分鐘後生效。<br>◆ 原本的首頁那期會留在歷史回顧裡。</div>',
+      [{ text: '取消' }, { text: '設為首頁', pri: true, fn: function () {
+        setTimeout(function () {
+          dialog('設為首頁中…', '', '<pre>處理中…</pre>', []);
+          api('/api/editions', { op: 'home', date: e.date }).then(function (r) {
+            closeDialog();
+            if (!r.ok) { toast('設定失敗：' + r.error, true); return; }
+            EDL = r; toast('已把 ' + fmtDate(e.date) + ' 設為首頁，GitHub 正在更新網站（約 1 分鐘）');
+            setTimeout(editionsDialog, 30);
+          });
+        }, 30);
+      } }]);
+  }
   function edDelete(e) {
     dialog('刪除 ' + fmtDate(e.date) + ' 這一期？', '「' + e.title + '」',
       '<div class="hint" style="font-size:13.5px;color:#e8dcc2;line-height:2">' +
       (e.published ? '◆ 會從公開網站的歷史回顧拿掉，並馬上推送到 GitHub。<br>' : '◆ 這期還沒發布，只會刪掉草稿。<br>') +
-      (e.active ? '◆ 這是你現在正在編的那期，刪掉後會換到剩下最新的一期。<br>' : '') +
+      (e.active ? '◆ 這是你現在正在編的那期，刪掉後會換到首頁那一期。<br>' : '') +
+      (EDL && e.date === EDL.home ? '◆ 這是目前的首頁，刪掉後首頁會自動改成剩下最新的一期。<br>' : '') +
       (window.ED_WEB ? '◆ 會從 GitHub 刪除這期的檔案；GitHub 留有歷史紀錄，要救回來跟管理者說一聲。</div>' : '◆ 原始檔和網頁會搬進 site\\backups，不會真的消失；要救回來跟 AI 說一聲。</div>'),
       [{ text: '取消' }, { text: '刪除', pri: true, fn: function () { setTimeout(function () { save().then(function () { edOp('delete', e.date, '已刪除 ' + fmtDate(e.date)); }); }, 30); } }]);
   }
@@ -695,7 +711,7 @@
       L.editions.forEach(function (e) {
         var row = h('div', { 'class': 'ed-er' + (e.active ? ' on' : '') },
           '<span class="d">' + fmtDate(e.date) + '</span><span class="tt">' + esc(e.title || '（無標題）') +
-          (e.active ? '<em>編輯中</em>' : '') + (!e.published ? '<em class="np">未發布</em>' : '') + (e.date === L.latest ? '<em class="lt">首頁</em>' : '') + '</span>');
+          (e.active ? '<em>編輯中</em>' : '') + (!e.published ? '<em class="np">未發布</em>' : '') + (e.date === L.home ? '<em class="lt">首頁</em>' : '') + '</span>');
         var open = h('button', { type: 'button', 'class': 'ed-btn' }, e.active ? '編輯中' : '開啟');
         open.disabled = e.active || !e.editable;
         if (!e.editable) open.title = '太早以前的期數只有成品網頁，沒有原始檔';
@@ -703,9 +719,13 @@
         var del = h('button', { type: 'button', 'class': 'ed-btn' }, '刪除');
         del.disabled = L.editions.length <= 1;
         del.addEventListener('click', function () { closeDialog(); setTimeout(function () { edDelete(e); }, 30); });
-        row.appendChild(open); row.appendChild(del); list.appendChild(row);
+        var home = h('button', { type: 'button', 'class': 'ed-btn' }, '設為首頁');
+        home.disabled = !e.published || e.date === L.home;
+        home.title = !e.published ? '還沒發布，發布後才能設為首頁' : e.date === L.home ? '目前就是首頁' : '讓網站首頁顯示這一期';
+        home.addEventListener('click', function () { closeDialog(); setTimeout(function () { edHome(e); }, 30); });
+        row.appendChild(open); row.appendChild(home); row.appendChild(del); list.appendChild(row);
       });
-      dialog('文章', '一期一篇；開啟就能修改那一期，發布後只更新那一期（最新一期才會換首頁）', list,
+      dialog('文章', '一期一篇；開啟就能修改那一期，發布後只更新那一期。首頁顯示哪一期由「設為首頁」決定，發布不會自動換首頁', list,
         [{ text: '關閉' }, { text: '＋ 新增文章', pri: true, fn: function () { setTimeout(edNew, 30); } }]);
     });
   }
@@ -793,7 +813,7 @@
     var bd = dialog('發布到網站', '會重新產生網頁並推上 GitHub，約 1～10 分鐘後公開網址看得到',
       (d.length ? '<div class="hint" style="color:#f0b060">還有 ' + d.length + ' 處未儲存，發布前會先自動儲存。</div>' : '') +
       '<div class="row"><label for="ed-msg">這次改了什麼</label><input type="text" id="ed-msg" value="手動修改文字"></div>' +
-      '<div class="hint">發布的是目前在編的 ' + esc(fmtDate(EDL && EDL.active)) + ' 這一期；它是最新一期才會換掉首頁，舊的期數只更新歷史回顧裡那一篇。</div>',
+      '<div class="hint">發布的是目前在編的 ' + esc(fmtDate(EDL && EDL.active)) + ' 這一期；' + (EDL && EDL.active === EDL.home ? '它就是目前的首頁，首頁會跟著更新。' : '不會換首頁，只更新歷史回顧裡這一篇（要當首頁請到「文章」清單按「設為首頁」）。') + '</div>',
       [{ text: '取消' }, { text: '發布', pri: true, fn: function () {
         var msg = $('ed-msg').value.trim() || '手動修改文字';
         var out = dialog('發布中…', '大約需要 10～30 秒，請不要關掉編輯器視窗', '<pre>處理中…</pre>', []);
@@ -929,7 +949,7 @@
     var m = /[?&]edition=([\w-]+)/.exec(location.search);
     if (!m) return;
     history.replaceState(null, '', location.pathname);
-    var want = m[1] === 'latest' ? L.latest : m[1];
+    var want = m[1] === 'latest' ? L.home : m[1];
     if (want && want !== L.active) edSwitch(want);
   });
 

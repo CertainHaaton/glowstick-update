@@ -2,7 +2,9 @@
 # 在 D:\AI\temp\pirate-progress\publish 執行：
 #   python -X utf8 src/tools/edition_cli.py list
 #   python -X utf8 src/tools/edition_cli.py new [YYYY-MM-DD]        以最新一期的版型當底開新一期（內容區清空、草稿 draft:true，不會公開）
-#   python -X utf8 src/tools/edition_cli.py publish YYYY-MM-DD "說明" 更新 edition.json 時間、draft:false → commit → push
+#   python -X utf8 src/tools/edition_cli.py publish YYYY-MM-DD "說明" [--home]
+#                                                                    更新 edition.json 時間、draft:false → commit → push。
+#                                                                    發布不會搶首頁（首頁看 src/site.json 的 home）；加 --home 才把這一期設為首頁
 #   python -X utf8 src/build_site.py                                 本機預覽整站（輸出到 _site/，不會上傳）
 # 改內容：直接改 src/editions/<日期>/ 的 template.html、i18n.json（ensure_ascii=False、indent=1），媒體放 img/。
 # 網頁版編輯器（https://certainhaaton.github.io/glowstick-update/edit/）也是改同一份檔案；推送前一定先 git pull。
@@ -63,9 +65,17 @@ def new(d):
     print("已開新的一期（草稿，還不會公開）：src/editions/%s/" % d)
 
 
-def publish(d, msg):
+def site_home():
+    f = ROOT / "src" / "site.json"
+    return json.loads(f.read_text(encoding="utf-8")).get("home") if f.exists() else None
+
+
+def publish(d, msg, make_home=False):
     if d not in dates():
         sys.exit("沒有 %s 這一期" % d)
+    # 首頁由 src/site.json 的 home 決定。沒指定 --home 時，發布不能換掉首頁：還沒有 site.json 就先把目前的首頁（最新公開那期）釘住
+    home = d if make_home else (site_home() or (published()[0] if published() else d))
+    (ROOT / "src" / "site.json").write_text(json.dumps({"home": home}, indent=1) + "\n", encoding="utf-8")
     m = meta(d)
     m["updated"] = datetime.datetime.now().strftime("%Y.%m.%d %H:%M")
     m["draft"] = False
@@ -73,7 +83,7 @@ def publish(d, msg):
     r = subprocess.run([sys.executable, "-X", "utf8", str(ROOT / "src" / "build_site.py"), "_site"], cwd=ROOT)
     if r.returncode:
         sys.exit("產生網站失敗，沒有推送")
-    git("add", "src/editions/" + d)
+    git("add", "src/editions/" + d, "src/site.json")
     if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode == 0:
         print("沒有變更，不需要發布")
         return
@@ -91,6 +101,7 @@ if __name__ == "__main__":
     elif a[0] == "new":
         new(a[1] if len(a) > 1 else None)
     elif a[0] == "publish" and len(a) >= 2:
-        publish(a[1], a[2] if len(a) > 2 else "更新內容")
+        rest = [x for x in a[2:] if x != "--home"]
+        publish(a[1], rest[0] if rest else "更新內容", "--home" in a)
     else:
         sys.exit("用法見檔案開頭")

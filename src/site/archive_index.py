@@ -43,7 +43,7 @@ function detect(){var a=navigator.languages&&navigator.languages.length?navigato
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function render(lang){
   document.title=LBL.title[lang]; document.getElementById('h').textContent=LBL.hist[lang]; document.getElementById('back').textContent=LBL.back_latest[lang].replace(/^‹ */,"");
-  document.getElementById('list').innerHTML=EDS.map(function(e,i){return '<a class="row" href="'+e.file+'"><span class="d">'+e.date.slice(0,10).replace(/-/g,'.')+(e.date.length>10?' #'+e.date.slice(11):'')+'</span><span class="t">'+esc(e.title[lang]||e.title.tw)+'</span>'+(i===0?'<span class="new">'+LBL.latest[lang]+'</span>':'')+'</a>';}).join('');
+  document.getElementById('list').innerHTML=EDS.map(function(e,i){return '<a class="row" href="'+e.file+'"><span class="d">'+e.date.slice(0,10).replace(/-/g,'.')+(e.date.length>10?' #'+e.date.slice(11):'')+'</span><span class="t">'+esc(e.title[lang]||e.title.tw)+'</span>'+(e.home?'<span class="new">'+LBL.latest[lang]+'</span>':'')+'</a>';}).join('');
   var m=LANGS.filter(function(x){return x.code===lang;})[0]; document.documentElement.lang=m?m.html:lang; setLangMenu(lang, m?m.label:lang);
 }
 initLangMenu(LANGS,function(c){try{localStorage.setItem(KEY,c);}catch(e){}render(c);});
