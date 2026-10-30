@@ -1,0 +1,127 @@
+/* ===== 網站編輯器（所見即所得）外掛樣式：只在 editor_server.py 的編輯頁載入，不會進到發布的網頁 ===== */
+#ed-ui{--g:#d8bd84;--g2:#b08d4c;--bg1:#1f1b17;--bg2:#2b241c;--txt:#e8d6aa;--dim:#9c917d;
+  font-family:"Noto Serif TC","Source Han Serif TC","PMingLiU",serif;letter-spacing:.06em}
+#ed-ui *{box-sizing:border-box}
+
+/* 滑鼠停留：金框＋標籤 */
+#ed-hover,#ed-sel{position:absolute;z-index:9990;pointer-events:none;border:1.5px solid var(--g);display:none}
+#ed-hover{box-shadow:0 0 0 3px rgba(216,189,132,.18);background:rgba(216,189,132,.06)}
+#ed-sel{border:2px solid #f0c060;box-shadow:0 0 0 4px rgba(240,192,96,.22)}
+#ed-hover .tag{position:absolute;left:-1.5px;bottom:100%;margin-bottom:3px;white-space:nowrap;padding:1px 10px;font-size:11.5px;line-height:1.9;
+  color:var(--txt);background:linear-gradient(100deg,#15120f,#3a3024);border:1px solid rgba(216,189,132,.55)}
+#ed-hover.below .tag{bottom:auto;top:100%;margin:3px 0 0}
+#ed-hover .tag b{color:#fff;font-weight:600}
+#ed-hover .tag em{font-style:normal;color:var(--dim);margin-left:8px;font-family:Consolas,monospace;font-size:10.5px}
+.ed-changed{outline:1px dashed rgba(240,160,60,.85);outline-offset:3px}
+
+/* 直接在頁面上改字 */
+[contenteditable="true"].ed-editing{outline:2px solid #f0c060 !important;outline-offset:4px;background:rgba(255,248,225,.9);color:#2b2a28 !important;
+  cursor:text;caret-color:#b08d4c;-webkit-user-modify:read-write}
+.hero [contenteditable="true"].ed-editing{background:rgba(20,16,12,.85);color:#fff !important}
+
+/* 共用面板外觀（右鍵選單／對話框／工具列）：沿用語言選單的黑金 */
+.ed-panel{background:linear-gradient(165deg,var(--bg1) 0%,var(--bg2) 100%);border:1px solid rgba(176,141,76,.6);box-shadow:0 16px 40px rgba(0,0,0,.35);color:#c9bea7;position:relative}
+.ed-panel::before{content:"";position:absolute;left:14px;right:14px;top:0;height:1px;background:linear-gradient(90deg,transparent,var(--g),transparent)}
+
+/* 右鍵選單 */
+#ed-menu{position:fixed;z-index:10001;min-width:230px;padding:7px 0;margin:0;list-style:none;display:none}
+#ed-menu.show{display:block}
+#ed-menu .hd{padding:4px 18px 8px;font-size:11.5px;color:var(--dim);border-bottom:1px solid rgba(216,189,132,.15);margin-bottom:5px;max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#ed-menu li.it{position:relative;display:flex;justify-content:space-between;gap:24px;padding:8px 18px 8px 32px;font-size:13.5px;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
+#ed-menu li.it:hover{background:rgba(216,189,132,.13);color:#fff}
+#ed-menu li.it::before{content:"◆";position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:7px;color:var(--g2);opacity:.7}
+#ed-menu li.it kbd{font:11px Consolas,monospace;color:var(--dim)}
+#ed-menu li.sep{height:1px;margin:5px 12px;background:rgba(216,189,132,.15)}
+
+/* 底部工具列 */
+#ed-bar{position:fixed;z-index:10000;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:8px 10px 8px 18px;white-space:nowrap}
+#ed-bar .t{color:var(--txt);font-size:13px;margin-right:6px}
+#ed-bar .t::before{content:"◆";font-size:8px;color:var(--g);margin-right:9px;vertical-align:2px}
+#ed-bar .st{font-size:12px;color:var(--dim);margin-right:8px;min-width:96px}
+#ed-bar .st.dirty{color:#f0b060}
+.ed-btn{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 15px;border:1px solid rgba(176,141,76,.55);background:rgba(255,255,255,.04);
+  color:var(--txt);font:inherit;font-size:12.5px;letter-spacing:.1em;cursor:pointer;transition:background .15s,color .15s,border-color .15s;text-decoration:none}
+.ed-btn:hover{background:rgba(216,189,132,.16);color:#fff;border-color:var(--g)}
+.ed-btn.pri{background:linear-gradient(100deg,#5f4c2d,#8a6d3d);border-color:var(--g);color:#fff}
+.ed-btn.pri:hover{filter:brightness(1.18)}
+.ed-btn[disabled]{opacity:.4;cursor:default;filter:none}
+
+/* 對話框 */
+#ed-mask{position:fixed;inset:0;z-index:10002;background:rgba(10,8,6,.55);display:none;align-items:center;justify-content:center;padding:24px}
+#ed-mask.show{display:flex}
+#ed-dlg{width:min(760px,100%);max-height:calc(100vh - 48px);display:flex;flex-direction:column}
+#ed-dlg h4{margin:0;padding:18px 24px 12px;font-size:16px;color:var(--txt);font-weight:600;letter-spacing:.12em}
+#ed-dlg h4 small{display:block;margin-top:2px;font-size:11.5px;color:var(--dim);font-weight:400;letter-spacing:.04em}
+#ed-dlg .bd{padding:4px 24px 8px;overflow:auto;flex:1}
+#ed-dlg .ft{display:flex;justify-content:flex-end;gap:8px;padding:12px 24px 18px;border-top:1px solid rgba(216,189,132,.12)}
+#ed-dlg .row{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start;margin:0 0 10px}
+#ed-dlg .row label{padding-top:7px;font-size:12.5px;color:var(--txt);text-align:right}
+#ed-dlg .row.cur label{color:#f0c060}
+#ed-dlg .row.cur label::before{content:"◆ ";font-size:8px;vertical-align:1px}
+#ed-dlg textarea,#ed-dlg input[type=text]{width:100%;min-height:36px;padding:7px 10px;resize:vertical;border:1px solid rgba(176,141,76,.4);background:rgba(0,0,0,.28);
+  color:#f3ead6;font:13.5px/1.7 "Noto Sans TC","Microsoft JhengHei",sans-serif;letter-spacing:.02em;outline:none}
+#ed-dlg textarea:focus,#ed-dlg input[type=text]:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(216,189,132,.15)}
+#ed-dlg .hint{font-size:11.5px;color:var(--dim);line-height:1.8;margin:2px 0 12px}
+#ed-dlg .list a{display:flex;justify-content:space-between;gap:18px;padding:10px 12px;border-bottom:1px solid rgba(216,189,132,.12);color:#d9cfb9;text-decoration:none;font-size:13px}
+#ed-dlg .list a:hover{background:rgba(216,189,132,.1);color:#fff}
+#ed-dlg .list a span:last-child{color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%}
+#ed-dlg pre{margin:0;padding:12px;max-height:300px;overflow:auto;background:rgba(0,0,0,.35);border:1px solid rgba(176,141,76,.25);color:#cfc5ae;font:12px/1.6 Consolas,monospace;white-space:pre-wrap}
+
+/* 提示訊息 */
+#ed-toast{position:fixed;z-index:10003;left:50%;bottom:76px;transform:translate(-50%,8px);padding:9px 22px;font-size:13px;color:var(--txt);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+#ed-toast.show{opacity:1;transform:translate(-50%,0)}
+#ed-toast.err{color:#ffb0a0;border-color:#c0603c}
+
+/* 編輯頁：回到頂端鈕讓位給工具列 */
+body.ed-on .totop{bottom:78px}
+
+/* 右鍵選單：停用項目、子選單（在下方插入） */
+#ed-menu li.it.off{color:#6d6556;cursor:default}
+#ed-menu li.it.off:hover{background:none;color:#6d6556}
+#ed-menu li.it.off::before{opacity:.25}
+#ed-menu li.has-sub > .sub{position:absolute;left:100%;top:-8px;min-width:150px;margin:0 0 0 2px;padding:7px 0;list-style:none;display:none}
+#ed-menu.flip li.has-sub > .sub{left:auto;right:100%;margin:0 2px 0 0}
+#ed-menu li.has-sub:hover > .sub{display:block}
+
+/* 剪下的區塊變淡；結構動作後新東西閃一下 */
+.ed-cut{opacity:.4;outline:1px dashed rgba(216,189,132,.9);outline-offset:4px}
+@keyframes edFlash{0%,60%{box-shadow:0 0 0 6px rgba(240,192,96,.55);background-color:rgba(255,236,190,.55)}100%{box-shadow:0 0 0 6px rgba(240,192,96,0);background-color:transparent}}
+.ed-flash{animation:edFlash 1.6s ease-out}
+
+/* AI 翻譯：下拉選單、待翻清單、工具列按鈕有待翻時亮起來 */
+#ed-dlg select.ed-sel{width:100%;height:36px;padding:0 10px;border:1px solid rgba(176,141,76,.4);background:#1d1915;color:#f3ead6;
+  font:13.5px "Noto Sans TC","Microsoft JhengHei",sans-serif;outline:none;cursor:pointer}
+#ed-dlg select.ed-sel:focus{border-color:var(--g)}
+#ed-dlg .ai-list{margin:6px 0 10px;border-top:1px solid rgba(216,189,132,.12);max-height:44vh;overflow:auto}
+#ed-dlg .ai-row{display:grid;grid-template-columns:22px 200px 1fr;gap:10px;align-items:center;padding:8px 6px;border-bottom:1px solid rgba(216,189,132,.1);cursor:pointer;font-size:13px}
+#ed-dlg .ai-row:hover{background:rgba(216,189,132,.07)}
+#ed-dlg .ai-row input{accent-color:#b08d4c;width:15px;height:15px;margin:0}
+#ed-dlg .ai-row .lb{color:#e8d6aa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#ed-dlg .ai-row .lb em{font-style:normal;font-size:11px;color:#f0b060;margin-left:8px}
+#ed-dlg .ai-row .tx{color:#a99f8a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#ed-bar .ed-btn.pri2{border-color:#f0c060;color:#ffe2a0;box-shadow:inset 0 0 0 1px rgba(240,192,96,.25)}
+
+/* AI 翻譯進度：每段狀態（等待／正在翻／完成／沒勾）、進度條 */
+#ed-dlg .ai-row.wait{opacity:.75}
+#ed-dlg .ai-row.skip{opacity:.3}
+#ed-dlg .ai-row.cur{background:rgba(240,192,96,.12);opacity:1;box-shadow:inset 3px 0 0 #f0c060}
+#ed-dlg .ai-row.cur input{animation:edPulse 1s ease-in-out infinite}
+#ed-dlg .ai-row.done{opacity:1}
+#ed-dlg .ai-row.done input{display:none}
+#ed-dlg .ai-row.done::before{content:"✓";color:#9fd28a;font-weight:700;text-align:center}
+@keyframes edPulse{50%{opacity:.25}}
+#ed-dlg .ai-prog{height:4px;margin:4px 0 6px;background:rgba(216,189,132,.12);display:none}
+#ed-dlg .ai-prog.on{display:block}
+#ed-dlg .ai-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8a6d3d,#f0c060);transition:width .3s}
+
+/* 文章（期數）：工具列按鈕、清單 */
+#ed-bar .ed-btn.ed-ed{margin-right:6px;border-color:var(--g);color:#fff;background:rgba(216,189,132,.1)}
+#ed-dlg .ed-eds{border-top:1px solid rgba(216,189,132,.12)}
+#ed-dlg .ed-er{display:grid;grid-template-columns:96px 1fr auto auto;gap:10px;align-items:center;padding:10px 8px;border-bottom:1px solid rgba(216,189,132,.12);font-size:13.5px}
+#ed-dlg .ed-er.on{background:rgba(240,192,96,.08);box-shadow:inset 3px 0 0 #f0c060}
+#ed-dlg .ed-er .d{color:var(--dim);font-family:Consolas,monospace;font-size:12.5px}
+#ed-dlg .ed-er .tt{color:#e8dcc2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#ed-dlg .ed-er .tt em{font-style:normal;font-size:11px;margin-left:8px;padding:0 7px;border:1px solid rgba(240,192,96,.6);color:#f0c060}
+#ed-dlg .ed-er .tt em.np{border-color:rgba(255,176,160,.6);color:#ffb0a0}
+#ed-dlg .ed-er .tt em.lt{border-color:rgba(216,189,132,.4);color:var(--dim)}
+#ed-dlg .ed-er .ed-btn{height:28px;padding:0 12px}

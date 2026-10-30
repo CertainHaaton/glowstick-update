@@ -1,0 +1,46 @@
+/* ===== 共用元件：語言選單、回到頂端、歷史回顧按鈕（首頁與 archive 清單頁共用，build.py／publish.py 內嵌） ===== */
+.lang{position:relative;z-index:30}
+.lang-btn{display:flex;align-items:center;gap:8px;height:34px;padding:0 13px 0 11px;border:1px solid rgba(176,141,76,.55);
+  background:rgba(255,255,255,.75);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);color:#2b2a28;
+  font-family:"Noto Serif TC","Source Han Serif TC","PMingLiU",serif;font-size:13px;letter-spacing:.08em;cursor:pointer;
+  transition:background .2s,color .2s,border-color .2s}
+.lang-btn:hover,.lang.open .lang-btn{background:#1d1a17;color:#e8d6aa;border-color:#b08d4c}
+.lang-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.4;flex:none}
+.lang-btn .caret{width:10px;height:10px;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;overflow:visible;transition:transform .2s}
+.lang.open .lang-btn .caret{transform:rotate(180deg)}
+.lang-menu{position:absolute;right:0;top:calc(100% + 6px);min-width:168px;margin:0;padding:8px 0;list-style:none;
+  background:linear-gradient(165deg,#1f1b17 0%,#2b241c 100%);border:1px solid rgba(176,141,76,.6);
+  box-shadow:0 14px 34px rgba(0,0,0,.28);opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .18s,transform .18s}
+.lang-menu::before{content:"";position:absolute;left:14px;right:14px;top:0;height:1px;background:linear-gradient(90deg,transparent,#d8bd84,transparent)}
+.lang.open .lang-menu{opacity:1;transform:none;pointer-events:auto}
+.lang-menu li{position:relative;padding:9px 20px 9px 32px;color:#c9bea7;font-family:"Noto Serif TC","Source Han Serif TC","PMingLiU",serif;
+  font-size:14px;letter-spacing:.08em;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
+.lang-menu li:hover,.lang-menu li:focus{background:rgba(216,189,132,.12);color:#fff;outline:none}
+.lang-menu li.on{color:#e8c98a}
+.lang-menu li.on::before{content:"◆";position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:8px;color:#d8bd84}
+
+a.hist{display:inline-flex;align-items:center;gap:7px;margin-left:16px;padding:3px 17px 3px 15px;
+  background:linear-gradient(100deg,#15120f 0%,#2e271f 58%,#5f4c2d 100%);color:#e8d6aa;text-decoration:none;
+  font-family:"Noto Serif TC","Source Han Serif TC","PMingLiU",serif;font-size:12px;letter-spacing:.14em;line-height:1.9;
+  clip-path:polygon(7px 0,100% 0,calc(100% - 7px) 100%,0 100%);transition:filter .2s}
+a.hist::before{content:"◆";font-size:7px;color:#d8bd84}
+a.hist::after{content:"›";font-size:14px;line-height:1;margin-left:1px}
+a.hist:hover{filter:brightness(1.4)}
+
+.totop{position:fixed;right:28px;bottom:28px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;
+  z-index:20;text-decoration:none;opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity .25s,transform .25s}
+.totop.show{opacity:1;pointer-events:auto;transform:none}
+.totop::before{content:"";position:absolute;inset:8px;transform:rotate(45deg);background:linear-gradient(135deg,#2b241c,#16130f);
+  border:1px solid #b08d4c;box-shadow:0 6px 16px rgba(0,0,0,.22);transition:background .2s,box-shadow .2s}
+.totop:hover::before{background:linear-gradient(135deg,#6b5532,#2b241c);box-shadow:0 0 0 4px rgba(216,189,132,.2),0 6px 16px rgba(0,0,0,.22)}
+.totop svg{position:relative;width:14px;height:14px;stroke:#e8d6aa;fill:none;stroke-width:2;margin-top:-2px}
+
+@media (max-width:900px){
+  .lang-btn{height:32px;padding:0 10px}
+  a.hist{margin-left:10px}
+  .totop{right:16px;bottom:16px}
+}
+/* 「修改」鈕：語言選單正下方、靠右；語言下拉打開時會蓋在它上面 */
+a.hist.edit{position:absolute;right:0;top:calc(100% + 8px);margin:0;white-space:nowrap}
+a.hist.edit::before{content:"✎";font-size:11px}
+.lang-menu{z-index:2}

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>網站編輯器｜閃光雞雞海賊團 更新週報</title>
+<!--
+  網頁版網站編輯器。外層這頁負責：登入（GitHub 金鑰）、讀寫 GitHub（backend.js）、把一期組成網頁（render.js）放進 iframe。
+  iframe 裡就是網站本身＋編輯介面（live.js／live.css，跟本機版共用），它的 fetch('/api/…') 由外層 backend.js 接手。
+  只有儲存庫協作者存得進去：GitHub 會擋掉沒有寫入權限的金鑰。
+-->
+<style>
+html,body{margin:0;height:100%;background:#f3f2f0;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;color:#4a4845}
+#page{position:fixed;inset:0;width:100%;height:100%;border:0;display:none;background:#f3f2f0}
+#gate{max-width:640px;margin:0 auto;padding:80px 24px}
+.brand{font-family:"Noto Serif TC","PMingLiU",serif;font-size:11px;letter-spacing:1.2em;color:#b9b5ae}
+h1{font-family:"Noto Serif TC","PMingLiU",serif;font-size:26px;color:#2b2a28;letter-spacing:.14em;margin:26px 0 6px}
+.panel{margin-top:24px;padding:22px 24px;background:linear-gradient(165deg,#1f1b17,#2b241c);border:1px solid rgba(176,141,76,.6);color:#d9cfb9;
+  font-family:"Noto Serif TC","PMingLiU",serif;letter-spacing:.04em;position:relative}
+.panel::before{content:"";position:absolute;left:14px;right:14px;top:0;height:1px;background:linear-gradient(90deg,transparent,#d8bd84,transparent)}
+.panel ol{margin:6px 0 14px;padding-left:22px;line-height:2;font-size:13.5px}
+.panel a{color:#e8c98a}
+.panel code{font-family:Consolas,monospace;color:#f0c060}
+.row{display:flex;gap:8px;margin-top:10px}
+input{flex:1;height:38px;padding:0 12px;border:1px solid rgba(176,141,76,.5);background:rgba(0,0,0,.3);color:#f3ead6;font:14px Consolas,monospace;outline:none;-webkit-text-security:disc}
+input:focus{border-color:#d8bd84}
+button{height:38px;padding:0 18px;border:1px solid #d8bd84;background:linear-gradient(100deg,#5f4c2d,#8a6d3d);color:#fff;font:inherit;font-size:14px;letter-spacing:.12em;cursor:pointer}
+button:hover{filter:brightness(1.15)}
+#msg{margin-top:12px;min-height:1.6em;font-size:13px;color:#f0b060;line-height:1.8}
+.small{font-size:12px;color:#9c917d;margin-top:14px;line-height:1.9}
+#loading{display:none;margin-top:30px;font-family:"Noto Serif TC","PMingLiU",serif;letter-spacing:.12em;color:#8d8a85}
+/* 發布後網站重產進度（左上角） */
+#ed-build{position:fixed;left:16px;top:16px;z-index:20000;padding:6px 16px;font:13px "Noto Serif TC","PMingLiU",serif;letter-spacing:.08em;color:#e8d6aa;
+  background:linear-gradient(100deg,#15120f,#3a3024);border:1px solid rgba(216,189,132,.6);box-shadow:0 8px 20px rgba(0,0,0,.25);display:none}
+#ed-build.show{display:block}
+#ed-build.ok{color:#bfe3a8;border-color:#7fae6a}
+#ed-build.err{color:#ffb0a0;border-color:#c0603c}
+#logout{position:fixed;right:16px;bottom:16px;z-index:20000;display:none;height:auto;padding:4px 12px;font-size:12px;background:#1d1a17;opacity:.6}
+#logout:hover{opacity:1}
+</style>
+</head>
+<body>
+<div id="gate">
+  <div class="brand">GLOWSTICK PIRATES</div>
+  <h1>網站編輯器</h1>
+  <div id="login" class="panel" style="display:none">
+    <div>第一次使用要貼一組 GitHub 金鑰（只存在這台電腦的瀏覽器）。只有被加為網站協作者的帳號才能存檔。</div>
+    <ol>
+      <li>登入 GitHub，打開 <a href="https://github.com/settings/tokens/new?scopes=public_repo&description=%E9%96%83%E5%85%89%E9%9B%9E%E9%80%B1%E5%A0%B1%E7%B7%A8%E8%BC%AF%E5%99%A8" target="_blank" rel="noopener">建立金鑰頁面</a>（已幫你勾好 <code>public_repo</code>）</li>
+      <li>「Expiration」選一個期限（例如 90 天或 No expiration），按最下面的綠色「Generate token」</li>
+      <li>複製畫面上那串 <code>ghp_</code> 開頭的金鑰，貼到下面</li>
+    </ol>
+    <div class="row"><input id="tok" autocomplete="off" spellcheck="false" placeholder="ghp_…"><button id="go">開始編輯</button></div>
+    <div id="msg"></div>
+    <div class="small">金鑰等同你的 GitHub 帳號權限，不要貼給別人或貼到其他網站。換電腦要重新貼一次；要登出按右下角「登出」。</div>
+  </div>
+  <div id="loading">讀取中…</div>
+</div>
+<iframe id="page" title="網站編輯"></iframe>
+<div id="ed-build"></div>
+<button id="logout" type="button" title="清掉這台電腦存的 GitHub 金鑰">登出</button>
+
+<script src="structedit.js"></script>
+<script src="render.js"></script>
+<script src="backend.js"></script>
+<script>
+(function () {
+  'use strict';
+  var B = window.EdBackend, $ = function (id) { return document.getElementById(id); };
+  var want = (/[?&]edition=([\w-]+)/.exec(location.search) || [])[1] || 'latest';
+
+  function showLogin(msg) { $('loading').style.display = 'none'; $('login').style.display = 'block'; $('msg').textContent = msg || ''; $('tok').focus(); }
+  function fail(e) { $('page').style.display = 'none'; $('gate').style.display = 'block'; showLogin('讀取失敗：' + e.message); }
+
+  // 把目前這期組成網頁放進 iframe；iframe 裡的 fetch('/api/…')、重新整理、媒體網址都接到外層
+  function render() {
+    return B.renderHTML().then(function (html) {
+      var inject = '<script>window.ED_WEB=true;window.ED_KEEP_DRAFTS=true;window.fetch=parent.EdBackend.edFetch;' +
+        'window.edReload=function(){parent.edRender();};<\/script>';
+      var tail = '<link rel="stylesheet" href="live.css"><script src="live.js"><\/script>';
+      html = html.replace(/<head>/i, '<head>' + inject);
+      var i = html.lastIndexOf('</body>');
+      html = html.slice(0, i) + tail + html.slice(i);
+      var f = $('page');
+      f.srcdoc = html;
+      f.style.display = 'block'; $('gate').style.display = 'none'; $('logout').style.display = 'block';
+      document.title = '編輯 ' + B.current().date.replace(/-/g, '.') + '｜閃光雞雞海賊團';
+    });
+  }
+  window.edRender = function () { render().catch(fail); };
+
+  function start() {
+    $('loading').style.display = 'block'; $('login').style.display = 'none';
+    B.checkToken().then(function (r) {
+      if (!r.push) { showLogin('這個 GitHub 帳號還沒有這個網站的修改權限。請網站管理者到 GitHub 把你加為協作者（Write），接受邀請後再試一次。'); return; }
+      return B.start(want).then(render);
+    }).catch(function (e) {
+      if (e.status === 401) { try { localStorage.removeItem(B.TOKEN_KEY); } catch (x) {} showLogin('金鑰無效或已過期，請重新產生一組。'); }
+      else if (e.status === 404) showLogin('看不到網站的儲存庫：這個帳號可能還沒被加為協作者，或金鑰沒勾 public_repo。');
+      else fail(e);
+    });
+  }
+  $('go').addEventListener('click', function () {
+    var t = $('tok').value.trim();
+    if (!/^(ghp_|github_pat_|gho_)\w+/.test(t)) { $('msg').textContent = '這看起來不像 GitHub 金鑰（應該是 ghp_ 或 github_pat_ 開頭）'; return; }
+    try { localStorage.setItem(B.TOKEN_KEY, t); } catch (e) {}
+    start();
+  });
+  $('tok').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('go').click(); });
+  $('logout').addEventListener('click', function () {
+    if (!confirm('登出會清掉這台電腦存的 GitHub 金鑰（沒發布的草稿會保留）。確定？')) return;
+    try { localStorage.removeItem(B.TOKEN_KEY); } catch (e) {}
+    location.reload();
+  });
+  var has = false; try { has = !!localStorage.getItem(B.TOKEN_KEY); } catch (e) {}
+  if (has) start(); else showLogin();
+})();
+</script>
+</body>
+</html>
