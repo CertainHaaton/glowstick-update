@@ -628,7 +628,7 @@
     return api('/api/editions').then(function (L) {
       EDL = L;
       var cur = (L.editions || []).filter(function (e) { return e.active; })[0];
-      $('ed-ed').textContent = '文章 ' + fmtDate(L.active) + (cur && !cur.published ? '（未發布）' : '') + ' ▾';
+      $('ed-ed').textContent = '文章 ' + fmtDate(L.active) + (cur && !cur.published ? (cur.shared ? '（共享草稿）' : '（未發布）') : '') + ' ▾';
       return L;
     });
   }
@@ -699,7 +699,8 @@
   function edDelete(e) {
     dialog('刪除 ' + fmtDate(e.date) + ' 這一期？', '「' + e.title + '」',
       '<div class="hint" style="font-size:13.5px;color:#e8dcc2;line-height:2">' +
-      (e.published ? '◆ 會從公開網站的歷史回顧拿掉，並馬上推送到 GitHub。<br>' : '◆ 這期還沒發布，只會刪掉草稿。<br>') +
+      (e.published ? '◆ 會從公開網站的歷史回顧拿掉，並馬上推送到 GitHub。<br>' :
+        e.shared ? '◆ 這是共享草稿：會從 GitHub 拿掉，其他協作者也看不到了（網站上本來就沒顯示）。<br>' : '◆ 這期只存在這台電腦，只會刪掉這裡的草稿。<br>') +
       (e.active ? '◆ 這是你現在正在編的那期，刪掉後會換到首頁那一期。<br>' : '') +
       (EDL && e.date === EDL.home ? '◆ 這是目前的首頁，刪掉後首頁會自動改成剩下最新的一期。<br>' : '') +
       (window.ED_WEB ? '◆ 會從 GitHub 刪除這期的檔案；GitHub 留有歷史紀錄，要救回來跟管理者說一聲。</div>' : '◆ 原始檔和網頁會搬進 site\\backups，不會真的消失；要救回來跟 AI 說一聲。</div>'),
@@ -711,7 +712,7 @@
       L.editions.forEach(function (e) {
         var row = h('div', { 'class': 'ed-er' + (e.active ? ' on' : '') },
           '<span class="d">' + fmtDate(e.date) + '</span><span class="tt">' + esc(e.title || '（無標題）') +
-          (e.active ? '<em>編輯中</em>' : '') + (!e.published ? '<em class="np">未發布</em>' : '') + (e.date === L.home ? '<em class="lt">首頁</em>' : '') + '</span>');
+          (e.active ? '<em>編輯中</em>' : '') + (e.published ? '' : e.shared ? '<em class="sd" title="已存到 GitHub，協作者看得到；網站上不顯示">共享草稿</em>' : '<em class="np" title="只存在這台電腦的瀏覽器，別人看不到">只在這台電腦</em>') + (e.date === L.home ? '<em class="lt">首頁</em>' : '') + '</span>');
         var open = h('button', { type: 'button', 'class': 'ed-btn' }, e.active ? '編輯中' : '開啟');
         open.disabled = e.active || !e.editable;
         if (!e.editable) open.title = '太早以前的期數只有成品網頁，沒有原始檔';
@@ -810,23 +811,28 @@
   // ---------- 發布 ----------
   function publish() {
     var d = dirtyKeys();
-    var bd = dialog('發布到網站', '會重新產生網頁並推上 GitHub，約 1～10 分鐘後公開網址看得到',
-      (d.length ? '<div class="hint" style="color:#f0b060">還有 ' + d.length + ' 處未儲存，發布前會先自動儲存。</div>' : '') +
+    var cur = ((EDL && EDL.editions) || []).filter(function (e) { return e.active; })[0], isPub = !!(cur && cur.published);
+    // 還沒公開的期數可以先「存成共享草稿」：放上 GitHub 給協作者看、接著改，網站上（含歷史回顧）不顯示
+    var bd = dialog(isPub ? '發布到網站' : '存檔或發布', isPub ? '會重新產生網頁並推上 GitHub，約 1～2 分鐘後公開網址看得到' : '這一期還沒公開，可以先存成共享草稿給其他協作者看',
+      (d.length ? '<div class="hint" style="color:#f0b060">還有 ' + d.length + ' 處未儲存，會先自動儲存。</div>' : '') +
       '<div class="row"><label for="ed-msg">這次改了什麼</label><input type="text" id="ed-msg" value="手動修改文字"></div>' +
-      '<div class="hint">發布的是目前在編的 ' + esc(fmtDate(EDL && EDL.active)) + ' 這一期；' + (EDL && EDL.active === EDL.home ? '它就是目前的首頁，首頁會跟著更新。' : '不會換首頁，只更新歷史回顧裡這一篇（要當首頁請到「文章」清單按「設為首頁」）。') + '</div>',
-      [{ text: '取消' }, { text: '發布', pri: true, fn: function () {
-        var msg = $('ed-msg').value.trim() || '手動修改文字';
-        var out = dialog('發布中…', '大約需要 10～30 秒，請不要關掉編輯器視窗', '<pre>處理中…</pre>', []);
-        save().then(function (ok) {
-          if (!ok) { out.querySelector('pre').textContent = '儲存失敗，已停止發布。'; addClose(); return; }
-          return api('/api/publish', { msg: msg }).then(function (r) {
-            $('ed-dlg').querySelector('h4').firstChild.textContent = r.ok ? '發布完成' : '發布失敗';
-            out.querySelector('pre').textContent = (r.ok ? '公開網址：https://certainhaaton.github.io/glowstick-update/\n（瀏覽器可能快取最多 10 分鐘，看不到新版就按 F5）\n\n' : '') + (r.log || '').trim().slice(-3000);
-            addClose();
-          });
-        }).catch(function (e) { out.querySelector('pre').textContent = '發布失敗：' + e.message; addClose(); });
-        return false;
-      } }]);
+      (isPub ? '' : '<div class="hint" style="font-size:13px;color:#e8dcc2;line-height:2">◆ <b>存成共享草稿</b>：放上 GitHub，行銷等協作者打開編輯器就看得到、可以接著改；<b>網站上（含歷史回顧）看不到</b>。<br>◆ <b>發布到網站</b>：公開，玩家在歷史回顧看得到。</div>') +
+      '<div class="hint">' + esc(fmtDate(EDL && EDL.active)) + ' 這一期' + (EDL && EDL.active === EDL.home ? '是目前的首頁，發布後首頁會跟著更新。' : '發布後不會換首頁（要當首頁請到「文章」清單按「設為首頁」）。') + '</div>',
+      [{ text: '取消' }].concat(isPub ? [] : [{ text: '存成共享草稿', fn: function () { go(true); return false; } }])
+        .concat([{ text: '發布到網站', pri: true, fn: function () { go(false); return false; } }]));
+    function go(shared) {
+      var msg = $('ed-msg').value.trim() || '手動修改文字', what = shared ? '存成共享草稿' : '發布';
+      var out = dialog(what + '中…', '大約需要 10～30 秒，請不要關掉編輯器視窗', '<pre>處理中…</pre>', []);
+      save().then(function (ok) {
+        if (!ok) { out.querySelector('pre').textContent = '儲存失敗，已停止。'; addClose(); return; }
+        return api('/api/publish', { msg: msg, shared: shared }).then(function (r) {
+          $('ed-dlg').querySelector('h4').firstChild.textContent = what + (r.ok ? '完成' : '失敗');
+          out.querySelector('pre').textContent = (r.ok && !shared ? '公開網址：https://certainhaaton.github.io/glowstick-update/\n（瀏覽器可能快取最多 10 分鐘，看不到新版就按 F5）\n\n' : '') + (r.log || '').trim().slice(-3000);
+          addClose();
+          if (r.ok) loadEditions();  // 工具列「文章 …（共享草稿）」跟著更新
+        });
+      }).catch(function (e) { out.querySelector('pre').textContent = what + '失敗：' + e.message; addClose(); });
+    }
     function addClose() {
       var ft = $('ed-dlg').querySelector('.ft'); ft.innerHTML = '';
       var b = h('button', { type: 'button', 'class': 'ed-btn pri' }, '關閉'); b.addEventListener('click', closeDialog); ft.appendChild(b);
@@ -846,7 +852,8 @@
       '◆ 「捨棄變更」＝整個回到上次發布的樣子（文字、版型、圖片全部），捨棄錯了也能再按「復原」找回來。<br>' +
       '◆ 「AI翻譯」：只改繁中就好，按一下把改過的段落翻成其他五種語言（括號裡是待翻段數）。右鍵「AI 翻譯這段」或六語言視窗裡也有。第一次要貼 Claude API 金鑰，金鑰只存在這台電腦的瀏覽器。<br>' +
       '◆ 右上角語言選單照常可以切換，切到哪個語言就改哪個語言。<br>' +
-      '◆ 「發布」＝重新產生網頁並推到公開網址。</div>');
+      '◆ 「發布」：還沒公開的期數可以先<b>存成共享草稿</b>（放上 GitHub，協作者打開編輯器就看得到、可以接著改，網站與歷史回顧都看不到）；確認好了再<b>發布到網站</b>。沒存成共享草稿前，改動只在你這台電腦。<br>' +
+      '◆ 「文章」清單：首頁顯示哪一期由「設為首頁」決定，發布不會自動換首頁。</div>');
   }
 
   // ---------- 介面 ----------

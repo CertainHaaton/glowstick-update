@@ -79,7 +79,17 @@
   // ---------- 讀 GitHub ----------
   // 讀「最新版本＋檔案清單」：分支資訊和檔案清單同時抓（各約 0.4 秒，同時抓只等一次）；
   // 萬一剛好有人在這一瞬間推送、兩者對不上，就退回一步一步抓的舊做法。
-  function loadHead() {
+  // 讀完檔案清單順便確認每一期是不是「共享草稿」（edition.json 的 draft:true：放在 GitHub 給協作者看，網站上不顯示）
+  function loadHead() { return loadHeadRaw().then(ensureMeta); }
+  var draftBySha = {};  // edition.json 的 sha → 是不是共享草稿（同一個 sha 內容不會變，讀過就記住）
+  function ensureMeta() {
+    var need = Object.keys(head.entries).filter(function (p) { return /^src\/editions\/[\d-]+\/edition\.json$/.test(p) && !(head.entries[p].sha in draftBySha); });
+    return Promise.all(need.map(function (p) {
+      var sha = head.entries[p].sha;
+      return readBlobText(sha).then(function (t) { var m = {}; try { m = JSON.parse(t); } catch (e) {} draftBySha[sha] = !!m.draft; });
+    })).then(function () { return head; });
+  }
+  function loadHeadRaw() {
     return Promise.all([gh('/branches/' + BRANCH), gh('/git/trees/' + BRANCH + '?recursive=1')]).then(function (r) {
       var commit = r[0].commit.sha, treeSha = r[0].commit.commit.tree.sha, t = r[1];
       // 用分支名稱抓檔案清單時，GitHub 回的 sha 是「當下那個版本（commit）」，對得上分支資訊才代表兩邊是同一版
@@ -103,11 +113,14 @@
       });
     });
   }
-  function publishedDates() {
+  function ghDates() {  // GitHub 上所有期數（已發布＋共享草稿）
     var ds = {};
     Object.keys(head.entries).forEach(function (p) { var m = /^src\/editions\/([\d-]+)\/template\.html$/.exec(p); if (m && DATE_RE.test(m[1])) ds[m[1]] = 1; });
     return Object.keys(ds).sort(newestFirst);
   }
+  function isShared(d) { var e = head.entries[edPath(d) + 'edition.json']; return !!(e && draftBySha[e.sha]); }
+  function publishedDates() { return ghDates().filter(function (d) { return !isShared(d); }); }
+  function sharedDates() { return ghDates().filter(isShared); }
   // 首頁是哪一期：src/site.json 的 home；沒設或那期不存在就是最新一期（跟 build_site.py 同規則）
   var siteSha = null, siteHome = null;
   function refreshSite() {
@@ -216,20 +229,22 @@
     });
   }
   function conflictCheck() {  // 我開始改之後，GitHub 上這一期有沒有被別人改過
-    if (E.isNew) return publishedDates().indexOf(E.date) >= 0 ? '已經有人發布了 ' + E.date + ' 這一期' : null;
+    if (E.isNew) return ghDates().indexOf(E.date) >= 0 ? '已經有人在 GitHub 上存了 ' + E.date + ' 這一期' : null;
     var now = edFiles(E.date), was = E.base.files || {};
     var diff = Object.keys(now).concat(Object.keys(was)).some(function (p) { return now[p] !== was[p]; });
     return diff ? '這一期在你開始修改後，已經被別人發布過新版本' : null;
   }
-  function publish(msg) {
+  // shared＝存成共享草稿：檔案放上 GitHub（協作者打開編輯器看得到），edition.json 標 draft:true，網站與歷史回顧都不顯示
+  function publish(msg, shared) {
     var log = [];
     return saveDraft().then(loadHead).then(function () {
+      if (shared && publishedDates().indexOf(E.date) >= 0) throw new Error('這一期已經公開了，不能改回共享草稿（要撤下請用「文章」清單的刪除）');
       var c = conflictCheck();
-      if (c && !window.confirm(c + '。\n\n仍要用你的版本蓋過去嗎？（按「取消」就先不發布）')) throw new Error(c + '，已取消發布');
+      if (c && !window.confirm(c + '。\n\n仍要用你的版本蓋過去嗎？（按「取消」就先不存）')) throw new Error(c + '，已取消');
       var pre = edPath(E.date), cur = E.cur, entries = [];
-      cur.meta = Object.assign({}, cur.meta || {}, { updated: nowStr(), draft: false });
+      cur.meta = Object.assign({}, cur.meta || {}, { updated: nowStr(), draft: !!shared });
       // 發布不會搶首頁：還沒有 site.json 時，順便把「目前的首頁」釘住（不然新的一期會變成最新而取代首頁）
-      if (!head.entries['src/site.json'] && publishedDates().length) entries.push(siteJSON(homeDate()));
+      if (!shared && !head.entries['src/site.json'] && publishedDates().length) entries.push(siteJSON(homeDate()));
       entries.push({ path: pre + 'template.html', mode: '100644', type: 'blob', content: cur.template });
       entries.push({ path: pre + 'i18n.json', mode: '100644', type: 'blob', content: JSON.stringify(cur.i18n, null, 1) });
       entries.push({ path: pre + 'i18n_src.json', mode: '100644', type: 'blob', content: JSON.stringify(cur.i18nSrc || {}, null, 1) });
@@ -253,6 +268,10 @@
     }).then(function (sha) {
       log.push('已存到 GitHub（' + sha.slice(0, 7) + '）');
       return cleanupAfterPublish().then(function () {
+        if (shared) {
+          log.push('已存成共享草稿：其他協作者打開編輯器的「文章」清單就看得到、可以接著改。\n網站上（含歷史回顧）看不到；確認好了再按「發布到網站」。');
+          return { ok: true, shared: true, log: log.join('\n') };
+        }
         watchBuild(sha);
         log.push('GitHub 正在重新產生網站，約 1～2 分鐘後網址上就是新版（左上角會顯示進度）。');
         return { ok: true, log: log.join('\n') };
@@ -291,14 +310,14 @@
   }
   function listing() {
     return refreshSite().then(allDrafts).then(function (drs) {
-      var pub = publishedDates(), ds = {};
-      pub.forEach(function (d) { ds[d] = 1; });
+      var pub = publishedDates(), sh = sharedDates(), ds = {};
+      pub.concat(sh).forEach(function (d) { ds[d] = 1; });
       drs.forEach(function (d) { if (d.isNew) ds[d.date] = 1; });
       var dates = Object.keys(ds).sort(newestFirst);
       return Promise.all(dates.map(function (d) {
         var dr = drs.filter(function (x) { return x.date === d; })[0];
         return (dr && dr.isNew ? Promise.resolve(String(dr.cur.i18n.t.h1 && dr.cur.i18n.t.h1.tw || '').replace(/<[^>]+>/g, '')) : editionTitle(d)).then(function (t) {
-          return { date: d, title: t, published: pub.indexOf(d) >= 0, active: E && d === E.date, editable: true, draft: !!dr };
+          return { date: d, title: t, published: pub.indexOf(d) >= 0, shared: sh.indexOf(d) >= 0, active: E && d === E.date, editable: true, draft: !!dr };
         });
       })).then(function (eds) { return { active: E && E.date, home: homeDate() || null, editions: eds }; });
     });
@@ -313,7 +332,7 @@
     date = date || new Date().toISOString().slice(0, 10);
     if (!DATE_RE.test(date)) return Promise.reject(new Error('日期格式要像 2026-11-06（同一天第二篇：2026-11-06-2）'));
     return saveDraft().then(allDrafts).then(function (drs) {
-      if (publishedDates().indexOf(date) >= 0 || drs.some(function (d) { return d.date === date; })) throw new Error('已經有 ' + date + ' 這一期了');
+      if (ghDates().indexOf(date) >= 0 || drs.some(function (d) { return d.date === date; })) throw new Error('已經有 ' + date + ' 這一期了');
       var st = clone(E.cur);
       SE.newEdition(st, date);
       st.meta = { updated: date.slice(0, 10).replace(/-/g, '.'), draft: false };
@@ -323,12 +342,20 @@
     });
   }
   function deleteEdition(date) {
-    var pub = publishedDates();
+    var pub = publishedDates(), all = ghDates();
     return allDrafts().then(function (drs) {
-      var total = pub.length + drs.filter(function (d) { return d.isNew && pub.indexOf(d.date) < 0; }).length;
+      var total = all.length + drs.filter(function (d) { return d.isNew && all.indexOf(d.date) < 0; }).length;
       if (total <= 1) throw new Error('只剩這一期，不能刪');
       var p = Promise.resolve();
-      if (pub.indexOf(date) >= 0) {
+      if (all.indexOf(date) >= 0 && pub.indexOf(date) < 0) {  // 共享草稿：從 GitHub 拿掉（網站本來就沒顯示）
+        p = commitFiles(function () {
+          var pre = edPath(date);
+          if (ghDates().indexOf(date) < 0) throw new Error(date + ' 這一期已經被刪掉了，請重新整理');
+          if (publishedDates().indexOf(date) >= 0) throw new Error(date + ' 剛被別人發布了，請重新整理後再決定要不要刪');
+          return Object.keys(head.entries).filter(function (x) { return x.indexOf(pre) === 0; })
+            .map(function (x) { return { path: x, mode: '100644', type: 'blob', sha: null }; });
+        }, '刪除共享草稿 ' + date);
+      } else if (pub.indexOf(date) >= 0) {
         if (pub.length <= 1) throw new Error('這是唯一公開的一期，不能刪');
         p = commitFiles(function () {  // 用提交前一刻的最新狀態再檢查一次
           var now = publishedDates(), pre = edPath(date);
@@ -386,7 +413,7 @@
       E.cur = clone(E.base); delete E.cur.files;
       return saveDraft().then(function () { return { ok: true, label: '捨棄全部變更' }; });
     },
-    'POST /api/publish': function (b) { return publish(b.msg).catch(function (e) { return { ok: false, log: '發布失敗：' + e.message }; }); },
+    'POST /api/publish': function (b) { return publish(b.msg, b.shared).catch(function (e) { return { ok: false, log: e.message }; }); },
     'GET /api/editions': function () { return listing().then(function (L) { return Object.assign({ ok: true }, L); }); },
     'POST /api/editions': function (b) {
       var p = b.op === 'switch' ? switchTo(b.date) : b.op === 'new' ? newEdition(b.date) : b.op === 'delete' ? deleteEdition(b.date) : b.op === 'home' ? setHome(b.date) : Promise.reject(new Error('不認得的操作'));
@@ -426,7 +453,7 @@
         var d = want && want !== 'latest' ? want : homeDate();
         // 共用檔（ui.css／ui.js）跟這一期的檔案同時抓
         return Promise.all([loadShared(), allDrafts().then(function (drs) {
-          if (pub.indexOf(d) < 0 && !drs.some(function (x) { return x.date === d; })) d = homeDate();
+          if (ghDates().indexOf(d) < 0 && !drs.some(function (x) { return x.date === d; })) d = homeDate();
           return openEdition(d);
         })]);
       });

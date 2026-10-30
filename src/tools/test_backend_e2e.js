@@ -100,7 +100,34 @@ function blob(sha) { return fetch('https://api.github.com/repos/CertainHaaton/gl
   r = await api('/api/editions', { op: 'new', date: '2026-11-07' });
   r = await api('/api/editions', { op: 'home', date: '2026-11-07' });
   ok(!r.ok && /還沒發布/.test(r.error), '還沒發布的不能設為首頁：' + r.error);
+  // 共享草稿：存上 GitHub（draft:true），清單標共享、不算已發布、不能設首頁；別的瀏覽器（清掉本機草稿）也看得到
+  r = await api('/api/publish', { msg: '共享草稿測試', shared: true });
+  T = await tree();
+  ok(r.ok && r.shared && T['src/editions/2026-11-07/template.html'] && JSON.parse(await blob(T['src/editions/2026-11-07/edition.json'])).draft === true, '存成共享草稿：檔案上了 GitHub，edition.json draft:true');
+  stores.drafts.clear();  // 模擬行銷用另一台電腦打開（本機沒有這期的草稿）
+  r = await api('/api/editions');
+  var e7 = r.editions.filter(function (e) { return e.date === '2026-11-07'; })[0];
+  ok(e7 && e7.shared && !e7.published && r.home === '2026-11-06', '另一台電腦的清單：看得到共享草稿、標「共享草稿」、首頁不變（還是 11/06）');
+  r = await api('/api/editions', { op: 'home', date: '2026-11-07' });
+  ok(!r.ok, '共享草稿不能設為首頁');
+  r = await api('/api/editions', { op: 'switch', date: '2026-11-07' });
+  var S7 = await api('/api/strings');
+  ok(r.ok && r.active === '2026-11-07' && S7.t.h1, '另一台電腦能打開共享草稿接著改');
+  r = await api('/api/publish', { msg: '共享草稿正式發布', shared: false });
+  T = await tree();
+  r = await api('/api/editions');
+  e7 = r.editions.filter(function (e) { return e.date === '2026-11-07'; })[0];
+  ok(e7 && e7.published && !e7.shared && JSON.parse(await blob(T['src/editions/2026-11-07/edition.json'])).draft === false, '共享草稿 → 發布到網站：draft:false、清單變已發布');
+  r = await api('/api/publish', { msg: '已公開不能改回草稿', shared: true });
+  ok(!r.ok && /已經公開/.test(r.log), '已公開的不能改回共享草稿');
   r = await api('/api/editions', { op: 'delete', date: '2026-11-07' });
+  T = await tree();
+  ok(r.ok && !T['src/editions/2026-11-07/template.html'], '刪除 11/07');
+  r = await api('/api/editions', { op: 'new', date: '2026-11-08' });
+  r = await api('/api/publish', { msg: '共享草稿刪除測試', shared: true });
+  r = await api('/api/editions', { op: 'delete', date: '2026-11-08' });
+  T = await tree();
+  ok(r.ok && !Object.keys(T).some(function (p) { return p.indexOf('src/editions/2026-11-08/') === 0; }), '刪除共享草稿：從 GitHub 拿掉');
   r = await api('/api/editions', { op: 'switch', date: '2026-10-29' });
   r = await api('/api/editions', { op: 'delete', date: '2026-11-06' });
   T = await tree();
