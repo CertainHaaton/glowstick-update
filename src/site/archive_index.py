@@ -4,6 +4,9 @@ import json
 
 def archive_index(eds, i18n, favicon_tag, ui_css, ui_js):
     labels = {k: i18n["t"][k] for k in ("hist", "back_latest", "latest", "title")}
+    # 首頁被「設為首頁」指到比較舊的一期時，回首頁的按鈕不能叫「回到最新一期」→ 改用「回到首頁」（自譯）
+    if eds and not eds[0].get("home"):
+        labels["back_latest"] = {"tw": "回到首頁", "cn": "返回首页", "en": "Back to home", "ja": "トップへ戻る", "ko": "홈으로", "ru": "На главную"}
     return TEMPLATE % (favicon_tag, ui_css, ui_js, json.dumps(eds, ensure_ascii=False),
                        json.dumps(labels, ensure_ascii=False), json.dumps(i18n["langs"], ensure_ascii=False))
 
@@ -43,7 +46,7 @@ function detect(){var a=navigator.languages&&navigator.languages.length?navigato
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function render(lang){
   document.title=LBL.title[lang]; document.getElementById('h').textContent=LBL.hist[lang]; document.getElementById('back').textContent=LBL.back_latest[lang].replace(/^‹ */,"");
-  document.getElementById('list').innerHTML=EDS.map(function(e,i){return '<a class="row" href="'+e.file+'"><span class="d">'+e.date.slice(0,10).replace(/-/g,'.')+(e.date.length>10?' #'+e.date.slice(11):'')+'</span><span class="t">'+esc(e.title[lang]||e.title.tw)+'</span>'+(e.home?'<span class="new">'+LBL.latest[lang]+'</span>':'')+'</a>';}).join('');
+  document.getElementById('list').innerHTML=EDS.map(function(e,i){return '<a class="row" href="'+e.file+'"><span class="d">'+e.date.slice(0,10).replace(/-/g,'.')+(e.date.length>10?' #'+e.date.slice(11):'')+'</span><span class="t">'+esc(e.title[lang]||e.title.tw)+'</span>'+(i===0?'<span class="new">'+LBL.latest[lang]+'</span>':'')+'</a>';}).join('');
   var m=LANGS.filter(function(x){return x.code===lang;})[0]; document.documentElement.lang=m?m.html:lang; setLangMenu(lang, m?m.label:lang);
 }
 initLangMenu(LANGS,function(c){try{localStorage.setItem(KEY,c);}catch(e){}render(c);});

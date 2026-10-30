@@ -116,13 +116,24 @@
     if (e.sha === siteSha) return Promise.resolve();
     return readBlobText(e.sha).then(function (t) { try { siteHome = JSON.parse(t).home || null; } catch (x) { siteHome = null; } siteSha = e.sha; });
   }
-  function homeDate() { var pub = publishedDates(); return pub.indexOf(siteHome) >= 0 ? siteHome : pub[0]; }
+  // 剛按完「設為首頁」的 1 分鐘內以自己設的為準（GitHub API 剛寫完偶爾還會回舊的 site.json）
+  var justSet = null;
+  function homeDate() {
+    var pub = publishedDates(), h = justSet && Date.now() < justSet.until ? justSet.date : siteHome;
+    return pub.indexOf(h) >= 0 ? h : pub.indexOf(siteHome) >= 0 ? siteHome : pub[0];
+  }
   function siteJSON(date) { return { path: 'src/site.json', mode: '100644', type: 'blob', content: JSON.stringify({ home: date }, null, 1) + '\n' }; }
   function setHome(date) {
     if (publishedDates().indexOf(date) < 0) return Promise.reject(new Error('這一期還沒發布，發布後才能設為首頁'));
-    function go() { return commitFiles([siteJSON(date)], '首頁改成 ' + date); }
+    function go() {
+      return commitFiles(function () {
+        if (publishedDates().indexOf(date) < 0) throw new Error(date + ' 這一期已經不在 GitHub 上了，請重新整理');
+        return [siteJSON(date)];
+      }, '首頁改成 ' + date);
+    }
     return go().catch(function (e) { if (e.status === 422) return go(); throw e; })
-      .then(function (sha) { watchBuild(sha); return loadHead(); }).then(refreshSite);
+      .then(function (sha) { watchBuild(sha); return loadHead(); }).then(refreshSite)
+      .then(function () { justSet = { date: date, until: Date.now() + 60000 }; });
   }
   function loadShared() {
     if (shared) return Promise.resolve(shared);
@@ -192,8 +203,11 @@
   }
 
   // ---------- 發布：這一期改過的檔一次 commit ----------
+  // entries 可以是函式：拿到最新的 head 之後才產生（刪除這種「要看 GitHub 現況才知道能不能做」的動作用；
+  // GitHub API 剛寫完時偶爾還會回舊資料，先前讀到的清單不可靠，提交前一刻再算一次）
   function commitFiles(entries, message) {
     return loadHead().then(function () {
+      if (typeof entries === 'function') entries = entries();
       return gh('/git/trees', { method: 'POST', body: { base_tree: head.tree, tree: entries } });
     }).then(function (tree) {
       return gh('/git/commits', { method: 'POST', body: { message: message, tree: tree.sha, parents: [head.commit] } });
@@ -316,9 +330,16 @@
       var p = Promise.resolve();
       if (pub.indexOf(date) >= 0) {
         if (pub.length <= 1) throw new Error('這是唯一公開的一期，不能刪');
-        var pre = edPath(date), entries = Object.keys(head.entries).filter(function (x) { return x.indexOf(pre) === 0; })
-          .map(function (x) { return { path: x, mode: '100644', type: 'blob', sha: null }; });
-        p = commitFiles(entries, '刪除 ' + date + ' 這一期').then(function (sha) { watchBuild(sha); });
+        p = commitFiles(function () {  // 用提交前一刻的最新狀態再檢查一次
+          var now = publishedDates(), pre = edPath(date);
+          if (now.indexOf(date) < 0) throw new Error(date + ' 這一期已經被刪掉了，請重新整理');
+          if (now.length <= 1) throw new Error('這是唯一公開的一期，不能刪');
+          var entries = Object.keys(head.entries).filter(function (x) { return x.indexOf(pre) === 0; })
+            .map(function (x) { return { path: x, mode: '100644', type: 'blob', sha: null }; });
+          // 刪的是首頁那期：site.json 一起改成剩下最新的一期（不留著指向已刪掉的日期，免得之後重發同日期時意外變回首頁）
+          if (date === homeDate()) entries.push(siteJSON(now.filter(function (d) { return d !== date; })[0]));
+          return entries;
+        }, '刪除 ' + date + ' 這一期').then(function (sha) { watchBuild(sha); });
       }
       return p.then(function () { return dropDraft(date); }).then(loadHead).then(function () {
         if (E && E.date === date) { E = null; return openEdition(homeDate()); }

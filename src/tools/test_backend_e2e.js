@@ -97,8 +97,6 @@ function blob(sha) { return fetch('https://api.github.com/repos/CertainHaaton/gl
   r = await api('/api/editions', { op: 'home', date: '2026-11-06' });
   T = await tree();
   ok(r.ok && r.home === '2026-11-06' && JSON.parse(await blob(T['src/site.json'])).home === '2026-11-06', '設為首頁：11/06，site.json 跟著改');
-  r = await api('/api/editions', { op: 'home', date: '2026-10-29' });
-  ok(r.ok && r.home === '2026-10-29', '設回 10/29');
   r = await api('/api/editions', { op: 'new', date: '2026-11-07' });
   r = await api('/api/editions', { op: 'home', date: '2026-11-07' });
   ok(!r.ok && /還沒發布/.test(r.error), '還沒發布的不能設為首頁：' + r.error);
@@ -107,8 +105,10 @@ function blob(sha) { return fetch('https://api.github.com/repos/CertainHaaton/gl
   r = await api('/api/editions', { op: 'delete', date: '2026-11-06' });
   T = await tree();
   ok(r.ok && !Object.keys(T).some(function (p) { return p.indexOf('src/editions/2026-11-06/') === 0; }), '刪除新的一期：GitHub 上那個資料夾不見了');
+  ok(r.home === '2026-10-29' && JSON.parse(await blob(T['src/site.json'])).home === '2026-10-29', '刪掉的是首頁那期：site.json 改回剩下的 10/29');
   r = await api('/api/editions', { op: 'delete', date: '2026-10-29' });
-  ok(!r.ok, '只剩一期不能刪：' + r.error);
+  T = await tree();
+  ok(!r.ok && T['src/editions/2026-10-29/template.html'], '只剩一期不能刪，GitHub 上也還在：' + r.error);
   // 衝突：別人在我改的時候發布 → 有提示
   var askd = 0; global.confirm = function () { askd++; return false; };
   var E1 = B.current(); E1.base.files = Object.assign({}, E1.base.files, { 'src/editions/2026-10-29/template.html': 'deadbeef' });
