@@ -93,9 +93,10 @@ button:hover{filter:brightness(1.15)}
 
   function start() {
     $('loading').style.display = 'block'; $('login').style.display = 'none';
-    B.checkToken().then(function (r) {
-      if (!r.push) { showLogin('這個 GitHub 帳號還沒有這個網站的修改權限。請網站管理者到 GitHub 把你加為協作者（Write），接受邀請後再試一次。'); return; }
-      return B.start(want).then(render);
+    // 檢查權限和讀資料同時進行（以前一前一後，多等約 0.5 秒）；沒權限就不顯示編輯畫面
+    Promise.all([B.checkToken(), B.start(want)]).then(function (r) {
+      if (!r[0].push) { showLogin('這個 GitHub 帳號還沒有這個網站的修改權限。請網站管理者到 GitHub 把你加為協作者（Write），接受邀請後再試一次。'); return; }
+      return render();
     }).catch(function (e) {
       if (e.status === 401) { try { localStorage.removeItem(B.TOKEN_KEY); } catch (x) {} showLogin('金鑰無效或已過期，請重新產生一組。'); }
       else if (e.status === 404) showLogin('看不到網站的儲存庫：這個帳號可能還沒被加為協作者，或金鑰沒勾 public_repo。');

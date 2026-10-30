@@ -74,7 +74,20 @@
   function getBlob(k) { return idb('blobs', 'readonly', function (s) { return s.get(k); }); }
 
   // ---------- 讀 GitHub ----------
+  // 讀「最新版本＋檔案清單」：分支資訊和檔案清單同時抓（各約 0.4 秒，同時抓只等一次）；
+  // 萬一剛好有人在這一瞬間推送、兩者對不上，就退回一步一步抓的舊做法。
   function loadHead() {
+    return Promise.all([gh('/branches/' + BRANCH), gh('/git/trees/' + BRANCH + '?recursive=1')]).then(function (r) {
+      var commit = r[0].commit.sha, treeSha = r[0].commit.commit.tree.sha, t = r[1];
+      // 用分支名稱抓檔案清單時，GitHub 回的 sha 是「當下那個版本（commit）」，對得上分支資訊才代表兩邊是同一版
+      if ((t.sha !== commit && t.sha !== treeSha) || t.truncated) return loadHeadSlow();
+      var entries = {};
+      (t.tree || []).forEach(function (x) { if (x.type === 'blob') entries[x.path] = { sha: x.sha, mode: x.mode }; });
+      head = { commit: commit, tree: treeSha, entries: entries };
+      return head;
+    }).catch(function (e) { if (e.status === 401 || e.status === 403) throw e; return loadHeadSlow(); });
+  }
+  function loadHeadSlow() {
     return gh('/git/ref/heads/' + BRANCH).then(function (ref) {
       var commit = ref.object.sha;
       return gh('/git/commits/' + commit).then(function (c) {
@@ -364,14 +377,15 @@
       return gh('').then(function (r) { return { push: !!(r.permissions && r.permissions.push) }; });
     },
     start: function (want) {
-      return loadHead().then(loadShared).then(function () {
+      return loadHead().then(function () {
         var pub = publishedDates();
         if (!pub.length) throw new Error('GitHub 上找不到任何一期（src/editions/）');
         var d = want && want !== 'latest' ? want : pub[0];
-        return allDrafts().then(function (drs) {
+        // 共用檔（ui.css／ui.js）跟這一期的檔案同時抓
+        return Promise.all([loadShared(), allDrafts().then(function (drs) {
           if (pub.indexOf(d) < 0 && !drs.some(function (x) { return x.date === d; })) d = pub[0];
           return openEdition(d);
-        });
+        })]);
       });
     },
     renderHTML: renderHTML,
