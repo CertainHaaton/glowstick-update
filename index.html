@@ -164,7 +164,7 @@ a.hist.edit::before{content:"✎";font-size:11px}
     </div>
   </div>
 
-  <div class="meta"><span data-i18n="team">閃光雞海賊團 開發團隊</span><span><span data-i18n="updated">更新：</span>2026.10.30 10:30<a class="hist" href="archive/" data-i18n="hist">歷史回顧</a></span></div>
+  <div class="meta"><span data-i18n="team">閃光雞海賊團 開發團隊</span><span><span data-i18n="updated">更新：</span>2026.10.30 10:37<a class="hist" href="archive/" data-i18n="hist">歷史回顧</a></span></div>
 
   <div class="lead">
     <p data-i18n="lead1">感謝每一位參與《閃光雞海賊團》試玩版的玩家。試玩期間收到的回饋，開發團隊皆已逐條記錄並檢討。</p>
@@ -334,7 +334,7 @@ window.addEventListener('load', fitH1);
 
 // ===== 「修改」鈕（只給自己用） =====
 // 網址加 ?editor=on 開一次 → 這個瀏覽器記住並顯示鈕；?editor=off 關掉。一般訪客沒有這個紀錄，看不到。
-// 鈕連到本機編輯器 http://127.0.0.1:8770/（開機自動在背景跑）；歷史存檔頁不顯示（編輯器改的是最新一期）。
+// 鈕連到本機編輯器 http://127.0.0.1:8770/（開機自動在背景跑），並帶上要改哪一期：首頁＝最新一期、歷史存檔頁＝那一期。
 (function () {
   var KEY = 'gp_editor', m = /[?&]editor=(on|off)\b/.exec(location.search);
   try {
@@ -342,7 +342,11 @@ window.addEventListener('load', fitH1);
       if (m[1] === 'on') localStorage.setItem(KEY, '1'); else localStorage.removeItem(KEY);
       history.replaceState(null, '', location.pathname + location.hash);
     }
-    if (localStorage.getItem(KEY) === '1' && !/\/archive\//.test(location.pathname)) document.getElementById('editBtn').hidden = false;
+    if (localStorage.getItem(KEY) === '1') {
+      var b = document.getElementById('editBtn'), d = /\/archive\/(\d{4}-\d\d-\d\d)\.html/.exec(location.pathname);
+      b.href = 'http://127.0.0.1:8770/?edition=' + (d ? d[1] : 'latest');
+      b.hidden = false;
+    }
   } catch (e) {}
 })();
 
