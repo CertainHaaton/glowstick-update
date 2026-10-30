@@ -1,6 +1,10 @@
 /* ===== 網站編輯器（所見即所得）外掛樣式：只在 editor_server.py 的編輯頁載入，不會進到發布的網頁 ===== */
 #ed-ui{--g:#d8bd84;--g2:#b08d4c;--bg1:#1f1b17;--bg2:#2b241c;--txt:#e8d6aa;--dim:#9c917d;
   font-family:"Noto Serif TC","Source Han Serif TC","PMingLiU",serif;letter-spacing:.06em}
+/* 「返回」鈕：沿用網站「修改」鈕的樣式與位置，箭頭改朝左 */
+a.hist.ed-back{padding-left:13px}
+a.hist.ed-back::before{content:"‹";font-size:14px;line-height:1}
+a.hist.ed-back::after{content:none}
 #ed-ui *{box-sizing:border-box}
 
 /* 滑鼠停留：金框＋標籤 */

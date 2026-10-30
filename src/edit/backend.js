@@ -391,6 +391,11 @@
     renderHTML: renderHTML,
     edFetch: edFetch,
     mediaURL: function (n) { return mediaURL(n); },
-    current: function () { return E; }
+    current: function () { return E; },
+    // 「返回」要去的網站頁（相對 edit/）：最新一期＝首頁、其他已發布的＝archive/<日期>.html、還沒發布的新期數＝首頁
+    siteURL: function () {
+      var pub = head ? publishedDates() : [], i = E ? pub.indexOf(E.date) : -1;
+      return i > 0 ? '../archive/' + E.date + '.html' : '../';
+    }
   };
 })();

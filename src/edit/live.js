@@ -852,6 +852,17 @@
     $('ed-hidden').addEventListener('click', hiddenTexts);
     $('ed-help').addEventListener('click', help);
     $('ed-mask').addEventListener('mousedown', function (e) { if (e.target === this) closeDialog(); });
+    // 網頁版：語言選單下方放「返回」（跟網站上「修改」鈕同位置），回到網站上正在改的這一期；沒存的先存成草稿再走
+    if (window.ED_WEB && parent.edBack) {
+      var box = document.getElementById('lang'), bk = h('a', { href: '#', 'class': 'hist edit ed-back', title: '回到網站上這一期（沒發布的改動會留在這台電腦的草稿）' });
+      bk.textContent = '返回';
+      if (box) box.insertBefore(bk, document.getElementById('langMenu'));
+      bk.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (editing) editing.blur();
+        save().then(function (ok) { if (!ok) return; window.__edNoWarn = true; parent.edBack(); });
+      });
+    }
   }
 
   // ---------- 事件 ----------
