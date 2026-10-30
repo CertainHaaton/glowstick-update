@@ -27,7 +27,7 @@
     return html;
   }
 
-  var TAG_LABEL = { h1: '大標題', h2: '分類標題', h3: '項目標題', p: '內文', div: '附註', a: '按鈕文字', span: '文字', img: '圖片替代文字' };
+  var TAG_LABEL = { h1: '大標題', h2: '分類標題', h3: '小標題', p: '內文', div: '附註', a: '按鈕文字', span: '文字', img: '圖片替代文字' };
   var SHARED_LABEL = {
     title: '瀏覽器分頁標題', fname: '下載檔名前綴（遊戲名）', hero_alt: '主視覺替代文字', team: '署名',
     updated: '「更新：」字樣', hist: '歷史回顧按鈕', dl_img: '下載圖片按鈕', dl_vid: '下載影片按鈕',
@@ -36,30 +36,34 @@
     brand: '左上角英文名', hero_en: '主視覺小標（英文）', footer: '頁尾版權'
   };
   function plain(s) { return String(s || '').replace(/<[^>]+>/g, ''); }
-  // 依版型出現順序把文字鍵分組：頁首／各分類／頁尾／網站共用（同 editor_server.py 的 groups）
+  // 內容區 <div class="flow"> 的範圍（找對應的 </div>）；沒有就 null
+  function flowSpan(t) {
+    var a = t.indexOf('<div class="flow"'); if (a < 0) return null;
+    var re = /<div\b|<\/div>/g, depth = 0, m; re.lastIndex = a;
+    while ((m = re.exec(t))) { depth += m[0] === '</div>' ? -1 : 1; if (!depth) return [a, m.index]; }
+    return null;
+  }
+  // 依版型出現順序把文字鍵分組：頁首／內容區（每個分類標題開一組，小標題底下的文字標成「小標題｜內文」）／頁尾／網站共用
   function groups(template, data) {
-    var re = /<section\b|<\/section>|data-i18n(?:-alt|-aria)?="([\w-]+)"|\{\{media:(\w+)\|/g, m, tokens = [];
+    var fl = flowSpan(template), re = /data-i18n(?:-alt|-aria)?="([\w-]+)"|\{\{media:(\w+)\|/g, m, tokens = [];
     while ((m = re.exec(template))) {
-      var s0 = m[0];
-      if (s0.indexOf('<section') === 0) tokens.push(['sec']);
-      else if (s0.indexOf('</section') === 0) tokens.push(['endsec']);
-      else if (m[2]) tokens.push(['key', 'cap_' + m[2], '圖說']);
+      var where = !fl ? 'head' : m.index < fl[0] ? 'head' : m.index < fl[1] ? 'flow' : 'foot';
+      if (m[2]) tokens.push([where, 'cap_' + m[2], '圖說']);
       else {
         var before = template.slice(0, m.index), tags = before.match(/<(\w+)/g), tag = tags ? tags[tags.length - 1].slice(1).toLowerCase() : 'span';
-        tokens.push(['key', m[1], TAG_LABEL[tag] || '文字']);
+        tokens.push([where, m[1], TAG_LABEL[tag] || '文字']);
       }
     }
-    var out = [], cur = { name: '頁首', items: [] }, seen = {}, inSec = false, item = '';
+    var out = [], cur = { name: '頁首', items: [] }, seen = {}, zone = 'head', item = '';
+    function next(name) { if (cur.items.length) out.push(cur); cur = { name: name, items: [] }; }
     tokens.forEach(function (tk) {
-      if (tk[0] === 'sec') { if (cur.items.length) out.push(cur); cur = { name: '', items: [] }; inSec = true; }
-      else if (tk[0] === 'endsec') { out.push(cur); cur = { name: '頁尾', items: [] }; inSec = false; }
-      else if (data[tk[1]] && !seen[tk[1]]) {
-        var key = tk[1], lab = tk[2]; seen[key] = 1;
-        if (inSec && !cur.name && lab === '分類標題') cur.name = data[key].tw;
-        if (lab === '項目標題') item = plain(data[key].tw);
-        if (lab === '分類標題') item = '';
-        cur.items.push({ key: key, label: SHARED_LABEL[key] || ((inSec && item) ? item + '｜' + lab.replace('項目', '') : lab) });
-      }
+      var key = tk[1], lab = tk[2];
+      if (!data[key] || seen[key]) return;
+      seen[key] = 1;
+      if (tk[0] !== zone) { zone = tk[0]; item = ''; next(zone === 'flow' ? '開頭' : '頁尾'); }
+      if (zone === 'flow' && lab === '分類標題') { next(plain(data[key].tw)); item = ''; }
+      if (zone === 'flow' && lab === '小標題') item = plain(data[key].tw);
+      cur.items.push({ key: key, label: SHARED_LABEL[key] || (zone === 'flow' && item && lab !== '小標題' ? item + '｜' + lab : lab) });
     });
     if (cur.items.length) out.push(cur);
     var rest = Object.keys(data).filter(function (k) { return !seen[k]; });

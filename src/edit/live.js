@@ -1,7 +1,7 @@
 // ===== 網站編輯器（所見即所得）：只在 editor_server.py 的編輯頁載入，不會進到發布的網頁 =====
 // 頁面本身＝build.py 的 render(live=True)，跟發布版同一份版型與文字；這支只負責「點、右鍵、改」。
 //   滑鼠移過：可編輯的物件亮金框＋名稱。左鍵：選取（連結不會跳走）。雙擊：直接在頁面上改目前語言。
-//   右鍵：選單，排法照演出編輯器——在下方插入（段落／圖片影片／項目／分類）、編輯、剪下／複製／貼上／複製且貼上／刪除、
+//   右鍵：選單，排法照演出編輯器——在下方插入（分類標題／小標題／段落／圖片影片）、編輯、剪下／複製／貼上／複製且貼上／刪除、
 //         上移／下移、六種語言、換圖片影片、頁面上看不到的文字。選取後也能直接按快捷鍵（Enter、Del、Ctrl+X/C/V/D、Alt+↑↓、Ctrl+Z）。
 //   文字改完先放在「未儲存」，按工具列「儲存」或 Ctrl+S 才寫回 i18n.json；換圖片影片是立刻換檔（舊檔備份到 backups）。
 //   結構動作（插入、刪除、移動、貼上）由伺服器的 structedit.py 改 template.html，每步都有備份，Ctrl+Z／「復原」一步步還原；
@@ -12,7 +12,7 @@
   var LANGS = I18N.langs, SAVED = JSON.parse(JSON.stringify(I18N.t)), LABEL = {};
   var hoverEl = null, selEl = null, editing = null, menuTarget = null;
   var HIST = [];  // 文字改動的復原紀錄 {key, prev}；空了再按 Ctrl+Z 就改復原結構動作
-  var KIND_NAME = { para: '段落', media: '圖片／影片', item: '項目', section: '分類' };
+  var KIND_NAME = { para: '段落', media: '圖片／影片', item: '小標題', section: '分類標題' };
   var SRC = {}, SRCP = {};  // AI 翻譯：各鍵「上次翻譯時的繁中」（伺服器 i18n_src.json）／這次翻好還沒存的
 
   // ---------- 小工具 ----------
@@ -219,7 +219,7 @@
   }
 
   // ---------- 結構：區塊、剪貼簿、插入刪除移動 ----------
-  // 區塊參照：圖說、下載鈕、圖片本身都算「那張圖片影片」；其他用文字鍵，伺服器再判斷是段落／項目／分類／固定物件。
+  // 區塊參照：圖說、下載鈕、圖片本身都算「那張圖片影片」；其他用文字鍵，伺服器再判斷是分類標題／小標題／段落／固定物件。
   function blockRef(el) {
     var fig = el.closest('figure');
     if (fig) { var m = fig.querySelector('[data-media]'); if (m) return 'media:' + m.getAttribute('data-media'); }
@@ -230,7 +230,7 @@
     if (!ref) return null;
     return ref.indexOf('media:') === 0 ? document.querySelector('[data-media="' + ref.slice(6) + '"]') : document.querySelector('[data-i18n="' + ref + '"]');
   }
-  function refName(ref) {  // 給人看的名字：項目／分類用標題、段落用前幾個字、圖片用圖說
+  function refName(ref) {  // 給人看的名字：標題、段落用前幾個字、圖片用圖說
     var el = refEl(ref); if (!el) return ref;
     if (ref.indexOf('media:') === 0) { var c = I18N.t['cap_' + ref.slice(6)]; return '「' + plain(c ? (c[lang()] || c.tw) : ref.slice(6)) + '」'; }
     var t = plain(el.innerHTML); return '「' + (t.length > 18 ? t.slice(0, 18) + '…' : t) + '」';
@@ -241,7 +241,7 @@
     [].forEach.call(document.querySelectorAll('.ed-cut'), function (e) { e.classList.remove('ed-cut'); });
     var c = getClip(); if (!c || c.mode !== 'cut') return;
     var el = refEl(c.ref); if (!el) return;
-    var blk = c.level === 'item' ? el.closest('.item') : c.level === 'section' ? el.closest('section') : c.level === 'media' ? el.closest('figure') : el;
+    var blk = c.level === 'media' ? el.closest('figure') : el;
     if (blk) blk.classList.add('ed-cut');
   }
   function describeRef(ref) {
@@ -273,12 +273,11 @@
     structOp({ op: 'paste', ref: blockRef(el), src: c.ref, kind: c.mode }, function () { if (c.mode === 'cut') sessionStorage.removeItem('ed-clip'); });
   }
   function doDelete(el, info) {
-    var ref = blockRef(el), blk = refEl(ref);
-    var box = info.level === 'item' ? blk.closest('.item') : info.level === 'section' ? blk.closest('section') : null;
-    var nm = box ? box.querySelectorAll('[data-media]').length : 0;
+    var ref = blockRef(el);
+    // 每個物件各自獨立：刪標題只刪標題那一行，底下的段落和圖片不受影響
     dialog('刪除' + KIND_NAME[info.level] + '？', '',
-      '<div class="hint" style="font-size:13.5px;color:#e8dcc2">' + esc(KIND_NAME[info.level] + refName(ref)) +
-      (nm ? '，裡面有 ' + nm + ' 個圖片／影片（檔案會搬進 backups，不會真的刪掉）' : '') + '。</div>' +
+      '<div class="hint" style="font-size:13.5px;color:#e8dcc2">' + esc(KIND_NAME[info.level] + refName(ref)) + '。' +
+      (info.level === 'item' || info.level === 'section' ? '只刪這一行標題，底下的段落和圖片會留著。' : '') + '</div>' +
       '<div class="hint">刪錯了可以按 Ctrl+Z 或工具列「復原」還原。</div>',
       [{ text: '取消' }, { text: '刪除', pri: true, fn: function () { structOp({ op: 'delete', ref: ref }); } }]);
     var b = $('ed-dlg').querySelector('.ed-btn.pri'); if (b) setTimeout(function () { b.focus(); }, 30);
@@ -306,7 +305,7 @@
       var server = c.template || c.texts || c.media.length, lines = [];
       if (pending) lines.push('還沒儲存的文字 ' + pending + ' 處');
       if (c.texts) lines.push('已儲存的文字改動 ' + c.texts + ' 段');
-      if (c.template) lines.push('新增、刪除、移動過的段落／項目／分類');
+      if (c.template) lines.push('新增、刪除、移動過的標題／段落／圖片');
       if (c.media.length) lines.push('換過的圖片影片：' + c.media.join('、'));
       if (!lines.length) { toast('跟上次發布一模一樣，沒有東西可以捨棄'); return; }
       dialog('捨棄全部變更？', '整個回到上次發布的樣子（也就是現在公開網站上的內容）',
@@ -670,7 +669,7 @@
     // 預設今天；今天已經有了就自動接 -2、-3…（同一天可以發好幾篇）
     var used = {}; ((EDL && EDL.editions) || []).forEach(function (e) { used[e.date] = 1; });
     var def = today(), n = 2; if (used[def]) { while (used[today() + '-' + n]) n++; def = today() + '-' + n; }
-    var bd = dialog('新增文章', '以目前這期的版型當底，內容區清空成一個空分類，大標題換成新的日期',
+    var bd = dialog('新增文章', '以目前這期的版型當底，內容區清空成一組空的分類標題＋小標題＋段落，大標題換成新的日期',
       '<div class="row"><label for="ed-newdate">日期</label><input type="text" id="ed-newdate" value="' + def + '" placeholder="例如 2026-11-06"></div>' +
       '<div class="hint">同一天要發第二篇，日期後面加 -2（例 2026-11-06-2），第三篇 -3，以此類推。<br>新文章先不會公開，寫好按「發布」才會出現在網站上（並成為首頁的最新一期）。</div>',
       [{ text: '取消' }, { text: '建立', pri: true, fn: function () {
@@ -712,12 +711,11 @@
   }
 
   // ---------- 右鍵選單（排法照演出編輯器） ----------
-  function canInsert(el, info, kind) {
-    var inItem = !!el.closest('.item'), inSec = !!el.closest('section'), inLead = !!el.closest('.lead');
-    if (kind === 'para') return inItem || (inLead && info.level === 'para');
-    if (kind === 'media') return inItem;
-    if (kind === 'item') return inItem || inSec;
-    return inSec || inLead;
+  // 內容區裡任何物件下方都能插任何種類；內容區前面的固定物件（大標題等）＝插到內容區最前面；頁尾不能插
+  function canInsert(el, info) {
+    if (info.level !== 'fixed') return true;
+    var fl = document.querySelector('.flow');
+    return !!fl && !!(fl.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_PRECEDING);
   }
   function openMenu(el, x, y) {
     menuTarget = el; select(el);
@@ -727,7 +725,7 @@
   function buildMenu(el, info, x, y) {
     var m = $('ed-menu'), d = describe(el), items = [], blk = info.level !== 'fixed', clip = getClip();
     var key = el.getAttribute('data-i18n'), alt = el.getAttribute('data-i18n-alt'), media = el.getAttribute('data-media');
-    var kinds = ['para', 'media', 'item', 'section'].filter(function (k) { return canInsert(el, info, k); });
+    var kinds = canInsert(el, info) ? ['section', 'item', 'para', 'media'] : [];
     items.push({ t: '在下方插入', sub: kinds.map(function (k) { return { t: KIND_NAME[k], fn: function () { insertBelow(el, k); } }; }), off: !kinds.length });
     if (key) items.push({ t: '編輯文字（' + langLabel(lang()) + '）', k: '雙擊 / Enter', fn: function () { startInline(el); } });
     if (media) items.push({ t: el.classList.contains('ph') ? '放入圖片／影片…' : '替換圖片／影片…', k: key ? '' : '雙擊', fn: function () { replaceMedia(el); } });
@@ -820,7 +818,7 @@
     dialog('怎麼用', '', '<div class="hint" style="font-size:13px;color:#d9cfb9;line-height:2.1">' +
       '◆ 滑鼠移到任何文字、圖片、影片上會亮金框並顯示名稱。<br>' +
       '◆ <b>雙擊</b>文字：直接在頁面上改（改的是右上角目前選的語言）。Enter 完成、Shift+Enter 換行、Esc 取消。<br>' +
-      '◆ <b>右鍵</b>：在下方插入（段落／圖片影片／項目／分類）、剪下、複製、貼上、複製且貼上、刪除、上移、下移、六種語言一起看、換圖片／影片、編輯頁面上看不到的文字（分頁標題、下載檔名等）。<br>' +
+      '◆ <b>右鍵</b>：在下方插入（分類標題／小標題／段落／圖片影片）、剪下、複製、貼上、複製且貼上、刪除、上移、下移、六種語言一起看、換圖片／影片、編輯頁面上看不到的文字（分頁標題、下載檔名等）。<br>' +
       '◆ 點一下選取後可直接按快捷鍵：Enter 改字、Del 刪除、Ctrl+X／C／V 剪下複製貼上、Ctrl+D 複製且貼上、Alt+↑↓ 上下移、Ctrl+Z 復原。<br>' +
       '◆ 新插入的文字其他語言是空的，頁面會先顯示繁中；右鍵「六種語言一起看」補翻譯。新插入的圖片位置會顯示「畫面準備中」，右鍵「放入圖片／影片」選檔。<br>' +
       '◆ 改過還沒儲存的地方會有橘色虛線框。按工具列「儲存」或 Ctrl+S 寫入檔案。<br>' +

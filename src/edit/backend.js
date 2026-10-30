@@ -156,6 +156,7 @@
   }
   function renderHTML() {
     return prepareBlobs().then(function () {
+      SE.flatten(E.cur);  // 舊版型（項目／分類一層包一層）的草稿或復原點 → 攤平成一行一個物件；已是新版型就不動
       return EdRender.renderLive(E.cur, mediaURL, shared, (E.cur.meta && E.cur.meta.updated) || nowStr());
     });
   }

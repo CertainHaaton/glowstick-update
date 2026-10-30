@@ -10,8 +10,6 @@ import datetime, json, pathlib, re, shutil, subprocess, sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 EDS = ROOT / "src" / "editions"
-sys.path.insert(0, str(pathlib.Path(__file__).parent))
-import structedit as se  # noqa: E402
 
 # 期數代號＝日期；同一天第二篇起加 -2、-3…（例 2026-10-30-2），排序時同一天依序號
 DATE_RE = re.compile(r"\d{4}-\d\d-\d\d(-([2-9]|[1-9]\d))?$")
@@ -19,10 +17,6 @@ DATE_RE = re.compile(r"\d{4}-\d\d-\d\d(-([2-9]|[1-9]\d))?$")
 
 def ed_key(name):
     return (name[:10], int(name[11:] or 1))
-
-
-def ed_label(name):
-    return name[:10].replace("-", ".") + (" #" + name[11:] if len(name) > 10 else "")
 
 
 def git(*a, check=True):
@@ -43,11 +37,6 @@ def published():
     return [d for d in dates() if not meta(d).get("draft")]
 
 
-def point_to(d):
-    p = EDS / d
-    se.TEMPLATE, se.I18N, se.IMG, se.BACKUP = p / "template.html", p / "i18n.json", p / "img", ROOT / "_backups"
-
-
 def new(d):
     if not d:  # 沒指定：今天；今天已經有了就自動接 -2、-3…
         d, n = datetime.date.today().isoformat(), 2
@@ -60,41 +49,13 @@ def new(d):
     base = published()[0]
     dst = EDS / d
     shutil.copytree(EDS / base, dst)
-    point_to(d)
-    s, dd = se.load()
-    nl = se.nl_of(s)
-    while True:  # 拿掉所有分類
-        m = re.search(r"<section\b", s)
-        if not m:
-            break
-        b = se.match_close(s, m.start(), "section")
-        for k in se.keys_in(s[m.start():b]):
-            dd["t"].pop(k, None)
-        a1, b1 = se.lines_of(s, m.start(), b)
-        s = s[:a1] + s[b1:]
-    lp = s.find('<div class="lead"')
-    lead = se.enclosing(s, s.find(">", lp), "div", "lead") if lp >= 0 else None
-    first = None
-    if lead:  # 開頭只留第一段
-        ps = list(re.finditer(r'<p\b[^>]*data-i18n="(\w+)"[^>]*>.*?</p>', s[lead[0]:lead[1]], re.S))
-        first = ps[0].group(1) if ps else None
-        for m in reversed(ps[1:]):
-            dd["t"].pop(m.group(1), None)
-            a1, b1 = se.lines_of(s, lead[0] + m.start(), lead[0] + m.end())
-            s = s[:a1] + s[b1:]
-    at, ind = se.insert_point(s, "section", first or "h1")
-    text, _ = se.new_block("section", ind, nl, dd)
-    s = se.put(s, at, text)
-    langs = [L["code"] for L in dd["langs"]]
-    dd["t"]["h1"] = {L: ("開發週報<i>・</i>" + ed_label(d) if L == "tw" else "") for L in langs}
-    if first:
-        dd["t"][first] = {L: ("以下整理本週的主要更新內容。" if L == "tw" else "") for L in langs}
-    se.save(se.tidy(s), dd)
-    srcf = dst / "i18n_src.json"
-    src = json.loads(srcf.read_text(encoding="utf-8")) if srcf.exists() else {}
-    src = {k: v for k, v in src.items() if k in dd["t"] and k not in ("h1", first)}
-    srcf.write_text(json.dumps(src, ensure_ascii=False, indent=1), encoding="utf-8")
-    used = set(re.findall(r"\{\{img:(\w+)\}\}", s)) | set(se.media_in(s))
+    # 版型、文字、翻譯紀錄交給 new_edition.js（跟網頁版編輯器「新增文章」同一支 structedit.js）
+    r = subprocess.run(["node", str(ROOT / "src" / "tools" / "new_edition.js"), str(dst), d],
+                       capture_output=True, text=True, encoding="utf-8")
+    if r.returncode:
+        shutil.rmtree(dst)
+        sys.exit("開新一期失敗：" + r.stderr)
+    used = set(json.loads(r.stdout))
     for f in list((dst / "img").iterdir()):
         if f.is_file() and f.stem not in used:
             f.unlink()  # 這是剛複製出來的副本，上一期的原檔不受影響

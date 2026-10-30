@@ -49,15 +49,11 @@ main{max-width:948px;margin:0 auto;padding:128px 0 120px;position:relative}
 .hero .cap .orn b{font-size:10px}
 
 .meta{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin:14px 0 26px;letter-spacing:.06em}
-.lead p{margin:0 0 1.1em}
 
-section{padding-top:56px}
 h2{display:flex;align-items:center;gap:16px;margin:0 0 26px;font-family:var(--serif);font-size:26px;color:var(--ink);letter-spacing:.14em}
 h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
-.item{margin:0 0 46px}
 h3{margin:0 0 6px;font-family:var(--serif);font-size:19px;color:var(--ink);letter-spacing:.08em}
 h3::before{content:"";display:inline-block;width:7px;height:7px;background:var(--gold);transform:rotate(45deg);margin:0 14px 0 2px;vertical-align:3px}
-.item p{margin:0 0 14px}
 figure{margin:0}
 figure img,figure video{display:block;width:100%;height:auto;border:1px solid #d6d2ca;background:#111}
 figure.half{max-width:620px}
@@ -87,6 +83,12 @@ footer{margin-top:70px;text-align:center;font-size:12px;color:#aaa49b;letter-spa
   h2{font-size:21px}
   .pair{grid-template-columns:1fr}
   }
+/* 內容區：每個物件獨立一行（分類標題／小標題／段落／圖片），間距用前後關係決定（上下邊距會重疊取大的那個） */
+.flow>p{margin:0 0 14px}
+.flow>h2{margin:96px 0 26px}
+.flow>h3{margin:46px 0 6px}
+.flow>h2+h3,.flow>h3:first-child{margin-top:0}
+.flow>figure,.flow>.pair{margin:0 0 14px}
 {{ui_css}}
 </style>
 </head>
@@ -117,78 +119,54 @@ footer{margin-top:70px;text-align:center;font-size:12px;color:#aaa49b;letter-spa
 
   <div class="meta"><span data-i18n="team">閃光雞海賊團 開發團隊</span><span><span data-i18n="updated">更新：</span>{{updated}}<a class="hist" href="{{history_href}}" data-i18n="hist">歷史回顧</a></span></div>
 
-  <div class="lead">
+  <div class="flow">
     <p data-i18n="lead1">感謝每一位參與《閃光雞海賊團》試玩版的玩家。試玩期間收到的回饋，開發團隊皆已逐條記錄並檢討。</p>
     <p data-i18n="lead2">以下整理試玩版推出後至今的主要更新內容。</p>
-  </div>
 
-  <section id="battle">
     <h2 data-i18n="sec_battle">戰鬥系統</h2>
 
-    <div class="item">
-      <h3 data-i18n="qte_h">新增時機判定</h3>
-      <p data-i18n="qte_p">施放部分技能時，畫面上會出現逐漸縮小的圓圈。在圓圈與判定框重疊的時機按下按鍵，可依判定結果（Perfect／Good）提升該次技能的傷害。</p>
-      <figure>{{media:qte|時機判定實際畫面}}</figure>
-    </div>
+    <h3 data-i18n="qte_h">新增時機判定</h3>
+    <p data-i18n="qte_p">施放部分技能時，畫面上會出現逐漸縮小的圓圈。在圓圈與判定框重疊的時機按下按鍵，可依判定結果（Perfect／Good）提升該次技能的傷害。</p>
+    <figure>{{media:qte|時機判定實際畫面}}</figure>
 
-    <div class="item">
-      <h3 data-i18n="dmg_h">傷害數字依加成來源區分顏色</h3>
-      <p data-i18n="dmg_p">傷害數字會依加成來源顯示不同顏色，分為一般、地形加成、時機判定加成，以及兩者同時成立四種，方便確認該次攻擊是否吃到加成。</p>
-      <figure>{{media:dmgcolor|四種傷害數字顏色對照}}</figure>
-    </div>
+    <h3 data-i18n="dmg_h">傷害數字依加成來源區分顏色</h3>
+    <p data-i18n="dmg_p">傷害數字會依加成來源顯示不同顏色，分為一般、地形加成、時機判定加成，以及兩者同時成立四種，方便確認該次攻擊是否吃到加成。</p>
+    <figure>{{media:dmgcolor|四種傷害數字顏色對照}}</figure>
 
-    <div class="item">
-      <h3 data-i18n="skill_h">新增技能「易位」</h3>
-      <p data-i18n="skill_p">可與我方一名成員交換位置。</p>
-      <figure>{{media:skills|易位施放畫面}}</figure>
-    </div>
+    <h3 data-i18n="skill_h">新增技能「易位」</h3>
+    <p data-i18n="skill_p">可與我方一名成員交換位置。</p>
+    <figure>{{media:skills|易位施放畫面}}</figure>
 
-    <div class="item">
-      <h3 data-i18n="auto_h">自動戰鬥 AI 調整</h3>
-      <p data-i18n="auto_p">自動戰鬥會試算各技能在當下戰況的效果，並據此選擇較合適的行動，減少無效施放與資源浪費。</p>
-      <figure>{{media:auto|自動戰鬥畫面}}</figure>
-    </div>
-  </section>
+    <h3 data-i18n="auto_h">自動戰鬥 AI 調整</h3>
+    <p data-i18n="auto_p">自動戰鬥會試算各技能在當下戰況的效果，並據此選擇較合適的行動，減少無效施放與資源浪費。</p>
+    <figure>{{media:auto|自動戰鬥畫面}}</figure>
 
-  <section id="info">
     <h2 data-i18n="sec_info">資訊提示</h2>
 
-    <div class="item">
-      <h3 data-i18n="tip_h">說明框自動附上狀態說明</h3>
-      <p data-i18n="tip_p">查看技能或道具的說明時，說明中提到的狀態會在旁邊自動展開說明框，直接列出該狀態的效果，不需另外查詢。</p>
-      <figure>{{media:tooltip|技能說明與狀態說明並列顯示}}</figure>
-    </div>
+    <h3 data-i18n="tip_h">說明框自動附上狀態說明</h3>
+    <p data-i18n="tip_p">查看技能或道具的說明時，說明中提到的狀態會在旁邊自動展開說明框，直接列出該狀態的效果，不需另外查詢。</p>
+    <figure>{{media:tooltip|技能說明與狀態說明並列顯示}}</figure>
 
-    <div class="item">
-      <h3 data-i18n="hb_h">回復禁止提示</h3>
-      <p data-i18n="hb_p">角色處於無法回復的狀態時，受到回復效果會顯示「回復禁止」，並標示造成此效果的狀態。</p>
-      <figure>{{media:healblock|回復禁止提示}}</figure>
-    </div>
+    <h3 data-i18n="hb_h">回復禁止提示</h3>
+    <p data-i18n="hb_p">角色處於無法回復的狀態時，受到回復效果會顯示「回復禁止」，並標示造成此效果的狀態。</p>
+    <figure>{{media:healblock|回復禁止提示}}</figure>
 
-    <div class="item">
-      <h3 data-i18n="stage_h">關卡進入條件提示</h3>
-      <p data-i18n="stage_p">未達成關卡進入條件時，提示視窗會列出缺少的條件，例如所需道具或隊伍成員。</p>
-      <figure class="half">{{media:stagecon|未持有必要道具時的提示}}</figure>
-    </div>
-  </section>
+    <h3 data-i18n="stage_h">關卡進入條件提示</h3>
+    <p data-i18n="stage_p">未達成關卡進入條件時，提示視窗會列出缺少的條件，例如所需道具或隊伍成員。</p>
+    <figure class="half">{{media:stagecon|未持有必要道具時的提示}}</figure>
 
-  <section id="qol">
     <h2 data-i18n="sec_qol">便利性調整</h2>
 
-    <div class="item">
-      <h3 data-i18n="shop_h">商店批量購買與道具販售</h3>
-      <p data-i18n="shop_p">商店購買時可調整數量，一次購買多個。另新增販售功能，可將背包中的道具賣出，販售前會顯示可獲得的金額供確認。</p>
-      <div class="pair">
-        <figure>{{media:shopbatch|批量購買}}</figure>
-        <figure>{{media:shopsell|道具販售}}</figure>
-      </div>
+    <h3 data-i18n="shop_h">商店批量購買與道具販售</h3>
+    <p data-i18n="shop_p">商店購買時可調整數量，一次購買多個。另新增販售功能，可將背包中的道具賣出，販售前會顯示可獲得的金額供確認。</p>
+    <div class="pair">
+      <figure>{{media:shopbatch|批量購買}}</figure>
+      <figure>{{media:shopsell|道具販售}}</figure>
     </div>
 
-    <div class="item">
-      <h3 data-i18n="win_h">視窗大小自由調整</h3>
-      <p data-i18n="win_p">視窗模式下可直接拖曳視窗邊緣調整大小，下次啟動時會沿用上次的設定。</p>
-    </div>
-  </section>
+    <h3 data-i18n="win_h">視窗大小自由調整</h3>
+    <p data-i18n="win_p">視窗模式下可直接拖曳視窗邊緣調整大小，下次啟動時會沿用上次的設定。</p>
+  </div>
 
   <div class="note" data-i18n="note">以上內容為開發中版本，正式版本可能有所調整。</div>
 
