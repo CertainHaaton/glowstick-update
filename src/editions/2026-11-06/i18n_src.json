@@ -35,5 +35,6 @@
  "cap_block_cue": "技術格檔時機提示",
  "cap_dmg_amber": "一般傷害數字（琥珀色）",
  "cap_sort_shop": "排序按鈕旁顯示目前的排序方式",
- "cap_streamer_on": "設定中的實況主模式"
+ "cap_streamer_on": "設定中的實況主模式",
+ "cap_dmg_terrain": "地形加成傷害數字（橘紅色，維持不變）"
 }
