@@ -201,12 +201,12 @@
    "ru": "Изменения проверки тайминга"
   },
   "qte2_p": {
-   "tw": "時機判定的圓圈改為在判定時機前 1 秒出現（原為 0.7 秒），圓圈縮小的過程更長，較容易看準按鍵時機。判定也從 Perfect、Good 兩級增加為 Perfect、Great、Good 三級，按得越準，傷害提升越多。",
-   "cn": "时机判定的圆圈改为在判定时机前 1 秒出现（原为 0.7 秒），圆圈缩小的过程更长，较容易看准按键时机。判定也从 Perfect、Good 两级增加为 Perfect、Great、Good 三级，按得越准，伤害提升越多。",
-   "en": "The timing ring now appears 1 second before the judgment point (previously 0.7 seconds). With a longer shrinking animation, it is easier to time your button press. Judgments have also been expanded from two tiers (Perfect and Good) to three (Perfect, Great and Good) — the more precise your timing, the greater the damage boost.",
-   "ja": "タイミング判定のリングが、判定タイミングの 1 秒前に表示されるようになりました（従来は 0.7 秒前）。リングが縮む時間が長くなり、ボタンを押すタイミングを合わせやすくなっています。また、判定が Perfect・Good の 2 段階から Perfect・Great・Good の 3 段階になりました。正確に押すほど、ダメージの上昇量が大きくなります。",
-   "ko": "타이밍 판정 원이 판정 시점 1초 전에 나타나도록 변경되었습니다(기존 0.7초). 원이 줄어드는 시간이 길어져 버튼을 누를 타이밍을 맞추기 쉬워졌습니다. 또한 판정이 Perfect, Good의 2단계에서 Perfect, Great, Good의 3단계로 늘어났습니다. 정확하게 누를수록 피해 증가량이 커집니다.",
-   "ru": "Кольцо тайминга теперь появляется за 1 секунду до момента проверки (раньше — за 0,7 секунды). Кольцо сужается дольше, поэтому попасть в нужный момент стало проще. Кроме того, оценок теперь три вместо двух: Perfect, Great и Good (раньше были только Perfect и Good). Чем точнее нажатие, тем сильнее растёт урон."
+   "tw": "時機判定的圓圈改為在判定時機前 1 秒出現（原為 0.7 秒），判定也從 Perfect、Good 兩級增加為 Perfect、Great、Good 三級，減少玩家的反應負擔。",
+   "cn": "时机判定的圆圈改为在判定时机前 1 秒出现（原为 0.7 秒），判定也从 Perfect、Good 两级增加为 Perfect、Great、Good 三级，减少玩家的反应负担。",
+   "en": "The timing ring now appears 1 second before the judgment point (previously 0.7 seconds). Judgments have also been expanded from two tiers (Perfect and Good) to three (Perfect, Great and Good), reducing the player's reaction burden.",
+   "ja": "タイミング判定のリングが、判定タイミングの 1 秒前に表示されるようになりました（従来は 0.7 秒前）。また、判定が Perfect・Good の 2 段階から Perfect・Great・Good の 3 段階になり、プレイヤーの反応面での負担を減らしています。",
+   "ko": "타이밍 판정 원이 판정 시점 1초 전에 나타나도록 변경되었습니다(기존 0.7초). 판정도 Perfect, Good의 2단계에서 Perfect, Great, Good의 3단계로 늘어나 플레이어의 반응 부담을 줄였습니다.",
+   "ru": "Кольцо тайминга теперь появляется за 1 секунду до момента проверки (раньше — за 0,7 секунды). Кроме того, оценок теперь три вместо двух: Perfect, Great и Good (раньше были только Perfect и Good). Это снижает нагрузку на реакцию игрока."
   },
   "block_h": {
    "tw": "技術格檔新增時機提示",
@@ -249,12 +249,12 @@
    "ru": "Новый цвет обычных чисел урона"
   },
   "dmgn_p": {
-   "tw": "上期提到的一般傷害數字配色已完成調整，改為較低調的琥珀色，我方與敵方的一般傷害皆使用此配色。地形加成與時機判定加成的顏色維持不變。",
-   "cn": "上期提到的一般伤害数字配色已完成调整，改为较低调的琥珀色，我方与敌方的一般伤害皆使用此配色。地形加成与时机判定加成的颜色维持不变。",
-   "en": "As mentioned last time, the color of normal damage numbers has been revised to a more subdued amber, used for normal damage dealt by both allies and enemies. Terrain bonus and timing bonus colors remain unchanged.",
-   "ja": "前回お伝えした通常ダメージ数値の配色を、落ち着いたアンバー系に変更しました。味方・敵どちらの通常ダメージにもこの配色が使われます。地形ボーナスとタイミング判定ボーナスの色は変更ありません。",
-   "ko": "지난번에 말씀드린 일반 피해 숫자 색상을 차분한 호박색으로 조정했습니다. 아군과 적의 일반 피해 모두 이 색상으로 표시됩니다. 지형 보너스와 타이밍 판정 보너스의 색상은 그대로입니다.",
-   "ru": "Как и обещали в прошлый раз, цвет обычных чисел урона заменён на более сдержанный янтарный — он используется и для урона союзников, и для урона врагов. Цвета бонуса местности и бонуса тайминга не изменились."
+   "tw": "上期提到的一般傷害數字配色已完成調整，我方與敵方的一般傷害皆使用此配色。地形加成與時機判定加成的顏色維持不變。",
+   "cn": "上期提到的一般伤害数字配色已完成调整，我方与敌方的一般伤害皆使用此配色。地形加成与时机判定加成的颜色维持不变。",
+   "en": "As mentioned last time, the color of normal damage numbers has been revised, and this color is used for normal damage dealt by both allies and enemies. Terrain bonus and timing bonus colors remain unchanged.",
+   "ja": "前回お伝えした通常ダメージ数値の配色の調整が完了しました。味方・敵どちらの通常ダメージにもこの配色が使われます。地形ボーナスとタイミング判定ボーナスの色は変更ありません。",
+   "ko": "지난번에 말씀드린 일반 피해 숫자 색상 조정이 완료되었습니다. 아군과 적의 일반 피해 모두 이 색상으로 표시됩니다. 지형 보너스와 타이밍 판정 보너스의 색상은 그대로입니다.",
+   "ru": "Как и обещали в прошлый раз, настройка цвета обычных чисел урона завершена — этот цвет используется и для урона союзников, и для урона врагов. Цвета бонуса местности и бонуса тайминга не изменились."
   },
   "sort_h": {
    "tw": "顯示目前的排序方式",
@@ -281,12 +281,12 @@
    "ru": "Добавлен режим стримера"
   },
   "stream_p": {
-   "tw": "設定中新增「實況主模式」。開啟後，R18 內容會被跳過或隱藏，劇情改以黑幕與簡短說明交代，方便直播或錄影（模組內容不在此限）。",
-   "cn": "设定中新增「实况主模式」。开启后，R18 内容会被跳过或隐藏，剧情改以黑幕与简短说明交代，方便直播或录影（模组内容不在此限）。",
-   "en": "A new \"Streamer Mode\" option has been added to Settings. When enabled, R18 content is skipped or hidden, and the story is conveyed with a black screen and a short summary instead, making the game easier to stream or record (mod content excluded).",
-   "ja": "設定に「配信者モード」を追加しました。オンにすると R18 コンテンツはスキップまたは非表示になり、ストーリーは暗転と短い説明で進行するため、配信や録画がしやすくなります（MOD のコンテンツは対象外）。",
-   "ko": "설정에 「스트리머 모드」가 추가되었습니다. 켜면 R18 콘텐츠는 건너뛰거나 숨겨지고, 스토리는 암전과 짧은 설명으로 대신 전달되어 방송이나 녹화가 편해집니다(모드 콘텐츠는 제외).",
-   "ru": "В настройки добавлен «Режим стримера». Если его включить, контент 18+ будет пропущен или скрыт, а сюжет будет передаваться через затемнение экрана и краткое описание — так игру удобнее транслировать или записывать (кроме контента модов)."
+   "tw": "設定中新增「實況主模式」。開啟後，R18 內容會被跳過或隱藏，方便直播或錄影（模組內容不在此限）。",
+   "cn": "设定中新增「实况主模式」。开启后，R18 内容会被跳过或隐藏，方便直播或录影（模组内容不在此限）。",
+   "en": "A new \"Streamer Mode\" option has been added to Settings. When enabled, R18 content is skipped or hidden, making the game easier to stream or record (mod content excluded).",
+   "ja": "設定に「配信者モード」を追加しました。オンにすると R18 コンテンツはスキップまたは非表示になり、配信や録画がしやすくなります（MOD のコンテンツは対象外）。",
+   "ko": "설정에 「스트리머 모드」가 추가되었습니다. 켜면 R18 콘텐츠는 건너뛰거나 숨겨져 방송이나 녹화가 편해집니다(모드 콘텐츠는 제외).",
+   "ru": "В настройки добавлен «Режим стримера». Если его включить, контент 18+ будет пропущен или скрыт, что упрощает трансляцию и запись игры (кроме контента модов)."
   },
   "cap_qte_great": {
    "tw": "時機判定 Great",
@@ -327,14 +327,6 @@
    "ja": "設定の配信者モード",
    "ko": "설정의 스트리머 모드",
    "ru": "Режим стримера в настройках"
-  },
-  "cap_dmg_terrain": {
-   "tw": "地形加成傷害數字（橘紅色，維持不變）",
-   "cn": "地形加成伤害数字（橘红色，维持不变）",
-   "en": "Terrain bonus damage number (orange-red, unchanged)",
-   "ja": "地形ボーナスのダメージ数値（オレンジレッド、変更なし）",
-   "ko": "지형 보너스 피해 숫자(주황빛 빨강, 변경 없음)",
-   "ru": "Число урона с бонусом местности (оранжево-красный, без изменений)"
   }
  }
 }
