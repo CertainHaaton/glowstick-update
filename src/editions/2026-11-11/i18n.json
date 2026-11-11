@@ -1,0 +1,316 @@
+{
+ "langs": [
+  {
+   "code": "tw",
+   "label": "繁體中文",
+   "html": "zh-Hant-TW"
+  },
+  {
+   "code": "cn",
+   "label": "简体中文",
+   "html": "zh-Hans-CN"
+  },
+  {
+   "code": "en",
+   "label": "English",
+   "html": "en"
+  },
+  {
+   "code": "ja",
+   "label": "日本語",
+   "html": "ja"
+  },
+  {
+   "code": "ko",
+   "label": "한국어",
+   "html": "ko"
+  },
+  {
+   "code": "ru",
+   "label": "Русский",
+   "html": "ru"
+  }
+ ],
+ "t": {
+  "title": {
+   "tw": "閃光雞雞海賊團 | 更新週報",
+   "cn": "闪光鸡鸡海贼团 | 更新周报",
+   "en": "Glowstick Pirates | Weekly Update",
+   "ja": "ピカチン海賊団 | アップデート週報",
+   "ko": "Glowstick Pirates | 주간 업데이트",
+   "ru": "Glowstick Pirates | Еженедельное обновление"
+  },
+  "fname": {
+   "tw": "閃光雞海賊團",
+   "cn": "闪光鸡海贼团",
+   "en": "GlowstickPirates",
+   "ja": "ピカチン海賊団",
+   "ko": "GlowstickPirates",
+   "ru": "GlowstickPirates"
+  },
+  "hero_alt": {
+   "tw": "閃光雞海賊團 主視覺",
+   "cn": "闪光鸡海贼团 主视觉",
+   "en": "Glowstick Pirates key art",
+   "ja": "ピカチン海賊団 キービジュアル",
+   "ko": "Glowstick Pirates 키 비주얼",
+   "ru": "Glowstick Pirates — ключевой арт"
+  },
+  "h1": {
+   "tw": "開發週報<i>・</i>2026.11.11",
+   "cn": "开发周报<i>・</i>2026.11.11",
+   "en": "Dev Update<i>・</i>2026.11.11",
+   "ja": "開発レポート<i>・</i>2026.11.11",
+   "ko": "개발 주간 보고<i>・</i>2026.11.11",
+   "ru": "Новости разработки<i>・</i>2026.11.11"
+  },
+  "team": {
+   "tw": "閃光雞海賊團 開發團隊",
+   "cn": "闪光鸡海贼团 开发团队",
+   "en": "Glowstick Pirates Dev Team",
+   "ja": "ピカチン海賊団 開発チーム",
+   "ko": "Glowstick Pirates 개발팀",
+   "ru": "Команда Glowstick Pirates"
+  },
+  "updated": {
+   "tw": "更新：",
+   "cn": "更新：",
+   "en": "Updated: ",
+   "ja": "更新：",
+   "ko": "업데이트: ",
+   "ru": "Обновлено: "
+  },
+  "hist": {
+   "tw": "歷史回顧",
+   "cn": "历史回顾",
+   "en": "Past Updates",
+   "ja": "過去の更新",
+   "ko": "지난 업데이트",
+   "ru": "Архив"
+  },
+  "lead1": {
+   "tw": "以下整理本週的主要更新內容。",
+   "cn": "以下整理本周的主要更新内容。",
+   "en": "Here are this week's main updates.",
+   "ja": "今週の主な更新内容をまとめました。",
+   "ko": "이번 주의 주요 업데이트 내용을 정리했습니다.",
+   "ru": "Ниже — основные изменения этой недели."
+  },
+  "note": {
+   "tw": "以上內容為開發中版本，正式版本可能有所調整。",
+   "cn": "以上内容为开发中版本，正式版本可能有所调整。",
+   "en": "The content above is from a version in development and may change in the final release.",
+   "ja": "上記は開発中の内容であり、製品版では変更される場合があります。",
+   "ko": "위 내용은 개발 중인 버전으로, 정식 버전에서 변경될 수 있습니다.",
+   "ru": "Приведённое выше относится к версии в разработке и может измениться в финальной версии."
+  },
+  "dl_img": {
+   "tw": "下載圖片",
+   "cn": "下载图片",
+   "en": "Download image",
+   "ja": "画像をダウンロード",
+   "ko": "이미지 다운로드",
+   "ru": "Скачать изображение"
+  },
+  "dl_vid": {
+   "tw": "下載影片",
+   "cn": "下载视频",
+   "en": "Download video",
+   "ja": "動画をダウンロード",
+   "ko": "동영상 다운로드",
+   "ru": "Скачать видео"
+  },
+  "totop": {
+   "tw": "回到頂端",
+   "cn": "回到顶部",
+   "en": "Back to top",
+   "ja": "トップへ戻る",
+   "ko": "맨 위로",
+   "ru": "Наверх"
+  },
+  "back_latest": {
+   "tw": "‹ 回到最新一期",
+   "cn": "‹ 回到最新一期",
+   "en": "‹ Back to latest",
+   "ja": "‹ 最新号へ戻る",
+   "ko": "‹ 최신 호로 돌아가기",
+   "ru": "‹ К последнему выпуску"
+  },
+  "latest": {
+   "tw": "最新",
+   "cn": "最新",
+   "en": "Latest",
+   "ja": "最新",
+   "ko": "최신",
+   "ru": "Новое"
+  },
+  "brand": {
+   "tw": "GLOWSTICK PIRATES",
+   "cn": "GLOWSTICK PIRATES",
+   "en": "GLOWSTICK PIRATES",
+   "ja": "GLOWSTICK PIRATES",
+   "ko": "GLOWSTICK PIRATES",
+   "ru": "GLOWSTICK PIRATES"
+  },
+  "hero_en": {
+   "tw": "DEVELOPMENT UPDATE",
+   "cn": "DEVELOPMENT UPDATE",
+   "en": "DEVELOPMENT UPDATE",
+   "ja": "DEVELOPMENT UPDATE",
+   "ko": "DEVELOPMENT UPDATE",
+   "ru": "DEVELOPMENT UPDATE"
+  },
+  "footer": {
+   "tw": "© WorkNite Games. All Rights Reserved.",
+   "cn": "© WorkNite Games. All Rights Reserved.",
+   "en": "© WorkNite Games. All Rights Reserved.",
+   "ja": "© WorkNite Games. All Rights Reserved.",
+   "ko": "© WorkNite Games. All Rights Reserved.",
+   "ru": "© WorkNite Games. All Rights Reserved."
+  },
+  "sec_battle": {
+   "tw": "戰鬥系統",
+   "cn": "战斗系统",
+   "en": "Combat",
+   "ja": "バトルシステム",
+   "ko": "전투 시스템",
+   "ru": "Бой"
+  },
+  "sec_info": {
+   "tw": "資訊提示",
+   "cn": "信息提示",
+   "en": "Information Display",
+   "ja": "情報表示",
+   "ko": "정보 표시",
+   "ru": "Подсказки"
+  },
+  "sec_qol": {
+   "tw": "便利性調整",
+   "cn": "便利性调整",
+   "en": "Quality of Life",
+   "ja": "利便性の向上",
+   "ko": "편의성 개선",
+   "ru": "Удобство"
+  },
+  "cd_h": {
+   "tw": "時機判定顯示倒數，精準治癒加入時機判定",
+   "cn": "时机判定显示倒数，精准治愈加入时机判定",
+   "en": "Timing Countdown, and Timing Judgment for Focused Heal",
+   "ja": "タイミング判定にカウントダウン表示、テクニカル・ヒールにタイミング判定を追加",
+   "ko": "타이밍 판정 카운트다운 표시, 정밀 치료에 타이밍 판정 추가",
+   "ru": "Отсчёт для проверки тайминга и тайминг для «Точное лечение»"
+  },
+  "cd_p": {
+   "tw": "時機判定的圓圈中央會顯示距離判定時機的剩餘秒數，更容易抓準按鍵時機。另外，「精準治癒」也加入時機判定，按得越準，回復量越多。",
+   "cn": "时机判定的圆圈中央会显示距离判定时机的剩余秒数，更容易抓准按键时机。另外，「精准治愈」也加入时机判定，按得越准，回复量越多。",
+   "en": "The timing ring now shows the seconds remaining until the judgment point in its center, making it easier to time your press. Focused Heal also gains a timing judgment — the more precise your timing, the more HP it restores.",
+   "ja": "タイミング判定のリングの中央に、判定タイミングまでの残り秒数が表示されるようになり、押すタイミングを合わせやすくなりました。また、「テクニカル・ヒール」にもタイミング判定が追加され、正確に押すほど回復量が増えます。",
+   "ko": "타이밍 판정 원의 중앙에 판정 시점까지 남은 초가 표시되어 버튼을 누를 타이밍을 맞추기 쉬워졌습니다. 또한 「정밀 치료」에도 타이밍 판정이 추가되어, 정확하게 누를수록 회복량이 늘어납니다.",
+   "ru": "В центре кольца тайминга теперь отображается, сколько секунд осталось до момента проверки, — так проще попасть в нужный момент. Кроме того, у навыка «Точное лечение» тоже появилась проверка тайминга: чем точнее нажатие, тем больше восстанавливается здоровья."
+  },
+  "cap_qte_countdown": {
+   "tw": "時機判定倒數與精準治癒",
+   "cn": "时机判定倒数与精准治愈",
+   "en": "Timing countdown and Focused Heal",
+   "ja": "タイミング判定のカウントダウンとテクニカル・ヒール",
+   "ko": "타이밍 판정 카운트다운과 정밀 치료",
+   "ru": "Отсчёт тайминга и «Точное лечение»"
+  },
+  "act_h": {
+   "tw": "行動中的角色更容易辨識",
+   "cn": "行动中的角色更容易辨识",
+   "en": "Easier to See Whose Turn It Is",
+   "ja": "行動中のキャラクターがわかりやすく",
+   "ko": "행동 중인 캐릭터를 알아보기 쉽게",
+   "ru": "Проще понять, чей сейчас ход"
+  },
+  "act_p": {
+   "tw": "輪到我方角色行動時，該角色會往前一步並在頭上顯示箭頭，其他角色則會變暗，一眼就能看出現在輪到誰。",
+   "cn": "轮到我方角色行动时，该角色会往前一步并在头上显示箭头，其他角色则会变暗，一眼就能看出现在轮到谁。",
+   "en": "When it's an ally's turn to act, that character steps forward with an arrow above their head while the others are dimmed, so you can tell at a glance whose turn it is.",
+   "ja": "味方キャラクターの行動順になると、そのキャラクターが一歩前に出て頭上に矢印が表示され、ほかのキャラクターは暗くなります。誰の番なのかがひと目でわかります。",
+   "ko": "아군 캐릭터의 차례가 되면 해당 캐릭터가 한 걸음 앞으로 나오고 머리 위에 화살표가 표시되며, 다른 캐릭터는 어두워집니다. 누구의 차례인지 한눈에 알 수 있습니다.",
+   "ru": "Когда наступает ход союзника, этот персонаж выходит на шаг вперёд, над ним появляется стрелка, а остальные затемняются — сразу видно, чей сейчас ход."
+  },
+  "pop_h": {
+   "tw": "獲得提示顯示頭像與圖示",
+   "cn": "获得提示显示头像与图标",
+   "en": "Portraits and Icons in Acquisition Pop-ups",
+   "ja": "入手時の通知に顔アイコンとアイテムアイコンを表示",
+   "ko": "획득 알림에 초상화와 아이콘 표시",
+   "ru": "Портреты и значки в окнах получения"
+  },
+  "pop_p": {
+   "tw": "獲得夥伴或道具時，提示視窗上方會顯示角色頭像或道具圖示，滑鼠移到圖示上即可查看詳細說明。關卡條件中的角色名稱，滑鼠移上去也會顯示角色介紹。",
+   "cn": "获得伙伴或道具时，提示窗口上方会显示角色头像或道具图标，鼠标移到图标上即可查看详细说明。关卡条件中的角色名称，鼠标移上去也会显示角色介绍。",
+   "en": "When you gain a companion or an item, the pop-up now shows the character portrait or item icon at the top. Hover over it to see the details. Hovering over a character name in stage requirements also shows that character’s profile.",
+   "ja": "仲間やアイテムを入手したとき、通知ウィンドウの上部にキャラクターの顔アイコンやアイテムアイコンが表示されます。アイコンにマウスを合わせると詳細を確認できます。ステージ条件に書かれたキャラクター名にマウスを合わせても、キャラクター紹介が表示されます。",
+   "ko": "동료나 아이템을 획득하면 알림 창 위쪽에 캐릭터 초상화나 아이템 아이콘이 표시되며, 아이콘에 마우스를 올리면 자세한 설명을 볼 수 있습니다. 스테이지 조건에 적힌 캐릭터 이름에 마우스를 올려도 캐릭터 소개가 표시됩니다.",
+   "ru": "При получении спутника или предмета в верхней части окна теперь показывается портрет персонажа или значок предмета; наведите на него курсор, чтобы увидеть подробности. Если навести курсор на имя персонажа в условиях этапа, появится описание персонажа."
+  },
+  "equip_h": {
+   "tw": "空裝備欄顯示部位圖示",
+   "cn": "空装备栏显示部位图标",
+   "en": "Slot Icons for Empty Equipment Slots",
+   "ja": "空き装備欄に部位アイコンを表示",
+   "ko": "빈 장비 칸에 부위 아이콘 표시",
+   "ru": "Значки типов в пустых ячейках снаряжения"
+  },
+  "equip_p": {
+   "tw": "船員頁中尚未裝備的欄位會顯示武器、防具或飾品的圖示，一眼就能看出該放什麼。",
+   "cn": "船员页中尚未装备的栏位会显示武器、防具或饰品的图标，一眼就能看出该放什么。",
+   "en": "Empty equipment slots on the crew screen now show a weapon, armor or accessory icon, so you can see at a glance what goes where.",
+   "ja": "船員画面で装備していない欄に、武器・防具・アクセサリーのアイコンが表示され、何を装備する欄なのかがひと目でわかります。",
+   "ko": "선원 화면에서 비어 있는 장비 칸에 무기, 방어구, 장신구 아이콘이 표시되어 무엇을 장착할 칸인지 한눈에 알 수 있습니다.",
+   "ru": "Пустые ячейки снаряжения на экране команды теперь отмечены значком оружия, брони или аксессуара — сразу видно, что куда надевать."
+  },
+  "stage_h": {
+   "tw": "選關畫面改版",
+   "cn": "选关画面改版",
+   "en": "Redesigned Stage Select",
+   "ja": "ステージ選択画面をリニューアル",
+   "ko": "스테이지 선택 화면 개편",
+   "ru": "Обновлённый выбор этапа"
+  },
+  "stage_p": {
+   "tw": "關卡群組改為章節旗幟的樣式，點選後切換到關卡列表的速度也更快。",
+   "cn": "关卡群组改为章节旗帜的样式，点选后切换到关卡列表的速度也更快。",
+   "en": "Stage groups are now shown as chapter banners, and switching to the stage list after selecting one is faster.",
+   "ja": "ステージグループが章ごとの旗のデザインになり、選んだあとステージ一覧に切り替わる速度も速くなりました。",
+   "ko": "스테이지 그룹이 챕터별 깃발 디자인으로 바뀌었고, 선택한 뒤 스테이지 목록으로 전환되는 속도도 빨라졌습니다.",
+   "ru": "Группы этапов теперь оформлены как флаги глав, а переход к списку этапов после выбора стал быстрее."
+  },
+  "recall_h": {
+   "tw": "標題畫面新增「回想之境」",
+   "cn": "标题画面新增「回想之境」",
+   "en": "Realm of Memories on the Title Screen",
+   "ja": "タイトル画面に「回想の間」を追加",
+   "ko": "타이틀 화면에 「회상의 경계」 추가",
+   "ru": "«Мир воспоминаний» на титульном экране"
+  },
+  "recall_p": {
+   "tw": "標題畫面新增「回想之境」按鈕，不用讀取存檔就能直接進入。",
+   "cn": "标题画面新增「回想之境」按钮，不用读取存档就能直接进入。",
+   "en": "A Realm of Memories button has been added to the title screen, so you can enter it directly without loading a save.",
+   "ja": "タイトル画面に「回想の間」ボタンを追加しました。セーブデータを読み込まずに直接入れます。",
+   "ko": "타이틀 화면에 「회상의 경계」 버튼이 추가되어, 저장 데이터를 불러오지 않고도 바로 들어갈 수 있습니다.",
+   "ru": "На титульный экран добавлена кнопка «Мир воспоминаний» — теперь туда можно попасть сразу, не загружая сохранение."
+  },
+  "skip_h": {
+   "tw": "快轉不再延續到下一段劇情",
+   "cn": "快进不再延续到下一段剧情",
+   "en": "Skip No Longer Carries Over to the Next Scene",
+   "ja": "スキップが次のシーンに引き継がれないように",
+   "ko": "빨리 넘기기가 다음 장면으로 이어지지 않음",
+   "ru": "Пропуск больше не переходит на следующую сцену"
+  },
+  "skip_p": {
+   "tw": "在上一段劇情開啟的快轉，進入關卡開場、勝利演出、新手教學或回想時會自動取消，避免不小心連續跳過重要內容。",
+   "cn": "在上一段剧情开启的快进，进入关卡开场、胜利演出、新手教学或回想时会自动取消，避免不小心连续跳过重要内容。",
+   "en": "Skip turned on during a previous scene is now automatically canceled when a stage intro, victory scene, tutorial or memory begins, so you won’t accidentally skip through important content.",
+   "ja": "前のシーンでオンにしたスキップは、ステージ開始時の演出、勝利演出、チュートリアル、回想に入ると自動で解除されます。大事な内容をうっかり続けて飛ばしてしまうことがなくなります。",
+   "ko": "이전 장면에서 켠 빨리 넘기기는 스테이지 시작 연출, 승리 연출, 튜토리얼, 회상에 들어가면 자동으로 해제되어, 중요한 내용을 실수로 연달아 넘기는 일을 막아 줍니다.",
+   "ru": "Пропуск, включённый в предыдущей сцене, теперь автоматически отключается при начале вступления к этапу, сцены победы, обучения или воспоминания — важное содержание не пролистается случайно."
+  }
+ }
+}
