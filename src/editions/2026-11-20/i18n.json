@@ -295,6 +295,22 @@
    "ja": "配信者モードのロード画面",
    "ko": "스트리머 모드의 불러오기 화면",
    "ru": "Экран загрузки в режиме стримера"
+  },
+  "items_h": {
+   "tw": "新增兩項玩家提案道具",
+   "cn": "新增两项玩家提案道具",
+   "en": "Two New Player-Inspired Items",
+   "ja": "プレイヤー発案のアイテムを2つ追加",
+   "ko": "플레이어 제안 아이템 2종 추가",
+   "ru": "Два новых предмета по идеям игроков"
+  },
+  "items_p": {
+   "tw": "商店新增兩項由玩家提供靈感的道具：<br>「性感黑豹古龍水」（提案：shmisiah）：在有狗狗出現的關卡中，遇到天使狗狗的機率大幅提升。<br>「通關的證明」（提案：lloygiakhs）：在已通關的關卡中戰鬥時，我方全體攻擊提升。",
+   "cn": "商店新增两项由玩家提供灵感的道具：<br>「性感黑豹古龙水」（提案：shmisiah）：在有狗狗出现的关卡中，遇到天使狗狗的几率大幅提升。<br>「通关的证明」（提案：lloygiakhs）：在已通关的关卡中战斗时，我方全体攻击提升。",
+   "en": "Two new items inspired by players are now available in the shop:<br>Sexy Panther Cologne (suggested by shmisiah): greatly increases the chance of meeting the Angelic Doggy in stages where dogs appear.<br>Proof of Conquest (suggested by lloygiakhs): raises the whole party's attack when fighting in stages you have already cleared.",
+   "ja": "プレイヤーのアイデアから生まれたアイテム2つをショップに追加しました。<br>「セクシーパンサー・コロン」（発案：shmisiah）：犬が登場するステージで、エンジェルワンちゃんに出会う確率が大きく上がります。<br>「制覇の証」（発案：lloygiakhs）：クリア済みのステージで戦うとき、味方全体の攻撃力が上がります。",
+   "ko": "플레이어 아이디어로 탄생한 아이템 2종이 상점에 추가되었습니다.<br>「섹시 팬서 코롱」(제안: shmisiah): 강아지가 등장하는 스테이지에서 천사 강아지를 만날 확률이 크게 오릅니다.<br>「정복의 증표」(제안: lloygiakhs): 이미 클리어한 스테이지에서 싸울 때 아군 전체의 공격력이 오릅니다.",
+   "ru": "В магазине появились два предмета, придуманных игроками:<br>Одеколон «Сексуальная пантера» (идея: shmisiah) — значительно повышает шанс встретить Ангельского пёсика на этапах, где появляются собаки.<br>Знак покорения (идея: lloygiakhs) — повышает атаку всего отряда в боях на уже пройденных этапах."
   }
  }
 }
