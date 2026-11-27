@@ -1,0 +1,292 @@
+{
+ "langs": [
+  {
+   "code": "tw",
+   "label": "繁體中文",
+   "html": "zh-Hant-TW"
+  },
+  {
+   "code": "cn",
+   "label": "简体中文",
+   "html": "zh-Hans-CN"
+  },
+  {
+   "code": "en",
+   "label": "English",
+   "html": "en"
+  },
+  {
+   "code": "ja",
+   "label": "日本語",
+   "html": "ja"
+  },
+  {
+   "code": "ko",
+   "label": "한국어",
+   "html": "ko"
+  },
+  {
+   "code": "ru",
+   "label": "Русский",
+   "html": "ru"
+  }
+ ],
+ "t": {
+  "title": {
+   "tw": "閃光雞雞海賊團 | 更新週報",
+   "cn": "闪光鸡鸡海贼团 | 更新周报",
+   "en": "Glowstick Pirates | Weekly Update",
+   "ja": "ピカチン海賊団 | アップデート週報",
+   "ko": "Glowstick Pirates | 주간 업데이트",
+   "ru": "Glowstick Pirates | Еженедельное обновление"
+  },
+  "fname": {
+   "tw": "閃光雞海賊團",
+   "cn": "闪光鸡海贼团",
+   "en": "GlowstickPirates",
+   "ja": "ピカチン海賊団",
+   "ko": "GlowstickPirates",
+   "ru": "GlowstickPirates"
+  },
+  "hero_alt": {
+   "tw": "閃光雞海賊團 主視覺",
+   "cn": "闪光鸡海贼团 主视觉",
+   "en": "Glowstick Pirates key art",
+   "ja": "ピカチン海賊団 キービジュアル",
+   "ko": "Glowstick Pirates 키 비주얼",
+   "ru": "Glowstick Pirates — ключевой арт"
+  },
+  "h1": {
+   "tw": "開發週報<i>・</i>2026.11.27",
+   "cn": "开发周报<i>・</i>2026.11.27",
+   "en": "Dev Update<i>・</i>2026.11.27",
+   "ja": "開発レポート<i>・</i>2026.11.27",
+   "ko": "개발 주간 보고<i>・</i>2026.11.27",
+   "ru": "Новости разработки<i>・</i>2026.11.27"
+  },
+  "team": {
+   "tw": "閃光雞海賊團 開發團隊",
+   "cn": "闪光鸡海贼团 开发团队",
+   "en": "Glowstick Pirates Dev Team",
+   "ja": "ピカチン海賊団 開発チーム",
+   "ko": "Glowstick Pirates 개발팀",
+   "ru": "Команда Glowstick Pirates"
+  },
+  "updated": {
+   "tw": "更新：",
+   "cn": "更新：",
+   "en": "Updated: ",
+   "ja": "更新：",
+   "ko": "업데이트: ",
+   "ru": "Обновлено: "
+  },
+  "hist": {
+   "tw": "歷史回顧",
+   "cn": "历史回顾",
+   "en": "Past Updates",
+   "ja": "過去の更新",
+   "ko": "지난 업데이트",
+   "ru": "Архив"
+  },
+  "lead1": {
+   "tw": "以下整理本週的主要更新內容。",
+   "cn": "以下整理本周的主要更新内容。",
+   "en": "Here are this week's main updates.",
+   "ja": "今週の主な更新内容をまとめました。",
+   "ko": "이번 주의 주요 업데이트 내용을 정리했습니다.",
+   "ru": "Ниже — основные изменения этой недели."
+  },
+  "note": {
+   "tw": "以上內容為開發中版本，正式版本可能有所調整。",
+   "cn": "以上内容为开发中版本，正式版本可能有所调整。",
+   "en": "The content above is from a version in development and may change in the final release.",
+   "ja": "上記は開発中の内容であり、製品版では変更される場合があります。",
+   "ko": "위 내용은 개발 중인 버전으로, 정식 버전에서 변경될 수 있습니다.",
+   "ru": "Приведённое выше относится к версии в разработке и может измениться в финальной версии."
+  },
+  "dl_img": {
+   "tw": "下載圖片",
+   "cn": "下载图片",
+   "en": "Download image",
+   "ja": "画像をダウンロード",
+   "ko": "이미지 다운로드",
+   "ru": "Скачать изображение"
+  },
+  "dl_vid": {
+   "tw": "下載影片",
+   "cn": "下载视频",
+   "en": "Download video",
+   "ja": "動画をダウンロード",
+   "ko": "동영상 다운로드",
+   "ru": "Скачать видео"
+  },
+  "totop": {
+   "tw": "回到頂端",
+   "cn": "回到顶部",
+   "en": "Back to top",
+   "ja": "トップへ戻る",
+   "ko": "맨 위로",
+   "ru": "Наверх"
+  },
+  "back_latest": {
+   "tw": "‹ 回到最新一期",
+   "cn": "‹ 回到最新一期",
+   "en": "‹ Back to latest",
+   "ja": "‹ 最新号へ戻る",
+   "ko": "‹ 최신 호로 돌아가기",
+   "ru": "‹ К последнему выпуску"
+  },
+  "latest": {
+   "tw": "最新",
+   "cn": "最新",
+   "en": "Latest",
+   "ja": "最新",
+   "ko": "최신",
+   "ru": "Новое"
+  },
+  "brand": {
+   "tw": "GLOWSTICK PIRATES",
+   "cn": "GLOWSTICK PIRATES",
+   "en": "GLOWSTICK PIRATES",
+   "ja": "GLOWSTICK PIRATES",
+   "ko": "GLOWSTICK PIRATES",
+   "ru": "GLOWSTICK PIRATES"
+  },
+  "hero_en": {
+   "tw": "DEVELOPMENT UPDATE",
+   "cn": "DEVELOPMENT UPDATE",
+   "en": "DEVELOPMENT UPDATE",
+   "ja": "DEVELOPMENT UPDATE",
+   "ko": "DEVELOPMENT UPDATE",
+   "ru": "DEVELOPMENT UPDATE"
+  },
+  "footer": {
+   "tw": "© WorkNite Games. All Rights Reserved.",
+   "cn": "© WorkNite Games. All Rights Reserved.",
+   "en": "© WorkNite Games. All Rights Reserved.",
+   "ja": "© WorkNite Games. All Rights Reserved.",
+   "ko": "© WorkNite Games. All Rights Reserved.",
+   "ru": "© WorkNite Games. All Rights Reserved."
+  },
+  "sec_battle": {
+   "tw": "戰鬥系統",
+   "cn": "战斗系统",
+   "en": "Combat",
+   "ja": "バトルシステム",
+   "ko": "전투 시스템",
+   "ru": "Бой"
+  },
+  "sec_info": {
+   "tw": "資訊提示",
+   "cn": "信息提示",
+   "en": "Information Display",
+   "ja": "情報表示",
+   "ko": "정보 표시",
+   "ru": "Подсказки"
+  },
+  "sec_qol": {
+   "tw": "便利性調整",
+   "cn": "便利性调整",
+   "en": "Quality of Life",
+   "ja": "利便性の向上",
+   "ko": "편의성 개선",
+   "ru": "Удобство"
+  },
+  "summon_h": {
+   "tw": "戰鬥中召喚俘虜",
+   "cn": "战斗中召唤俘虏",
+   "en": "Summon Captives in Battle",
+   "ja": "戦闘中に捕虜を召喚",
+   "ko": "전투 중 포로 소환",
+   "ru": "Призыв пленников в бою"
+  },
+  "summon_p": {
+   "tw": "戰鬥中可以從道具召喚已捕捉的俘虜加入我方作戰。本場戰鬥剛捕捉到的俘虜無法立刻召喚。",
+   "cn": "战斗中可以从道具召唤已捕捉的俘虏加入我方作战。本场战斗刚捕捉到的俘虏无法立刻召唤。",
+   "en": "During battle, you can now summon captured captives from your items to fight on your side. Captives caught in the current battle cannot be summoned right away.",
+   "ja": "戦闘中、アイテムから捕まえた捕虜を召喚して味方として戦わせられるようになりました。その戦闘で捕まえたばかりの捕虜はすぐには召喚できません。",
+   "ko": "전투 중 아이템에서 포획한 포로를 소환해 아군으로 싸우게 할 수 있습니다. 해당 전투에서 막 포획한 포로는 바로 소환할 수 없습니다.",
+   "ru": "В бою теперь можно призвать пойманных пленников из предметов, чтобы они сражались на вашей стороне. Пленников, пойманных в текущем бою, нельзя призвать сразу."
+  },
+  "war_h": {
+   "tw": "新增總體戰",
+   "cn": "新增总体战",
+   "en": "Total War Added",
+   "ja": "総力戦を追加",
+   "ko": "총력전 추가",
+   "ru": "Добавлена «Тотальная война»"
+  },
+  "war_p": {
+   "tw": "部分關卡為總體戰：可編成多支隊伍依序上場，一隊全滅就由下一隊接替；已經上場過的角色在該關無法再次登場。",
+   "cn": "部分关卡为总体战：可编成多支队伍依序上场，一队全灭就由下一队接替；已经上场过的角色在该关无法再次登场。",
+   "en": "Some stages are now Total War battles: you can form several teams that enter in order, and when one team is wiped out, the next takes over. Characters who have already fought cannot appear again in that stage.",
+   "ja": "一部のステージが総力戦になりました。複数のチームを編成して順番に出撃し、1チームが全滅すると次のチームが引き継ぎます。すでに出撃したキャラクターは、そのステージでは再び出撃できません。",
+   "ko": "일부 스테이지가 총력전이 되었습니다. 여러 팀을 편성해 차례로 출전하며, 한 팀이 전멸하면 다음 팀이 이어받습니다. 이미 출전한 캐릭터는 해당 스테이지에서 다시 출전할 수 없습니다.",
+   "ru": "Некоторые этапы теперь проходят в формате «Тотальная война»: можно собрать несколько отрядов, которые вступают в бой по очереди, и когда один отряд погибает, его сменяет следующий. Персонажи, уже участвовавшие в бою, не могут снова выйти на этом этапе."
+  },
+  "event_h": {
+   "tw": "地下城新增事件",
+   "cn": "地下城新增事件",
+   "en": "New Dungeon Events",
+   "ja": "ダンジョンにイベントを追加",
+   "ko": "던전 이벤트 추가",
+   "ru": "Новые события в подземелье"
+  },
+  "event_p": {
+   "tw": "地下城部分樓層新增擲硬幣賭局與拍賣競標事件，可以用金錢換取裝備。",
+   "cn": "地下城部分楼层新增掷硬币赌局与拍卖竞标事件，可以用金钱换取装备。",
+   "en": "Some dungeon floors now feature a coin-toss gamble and an auction event where you can bid money for equipment.",
+   "ja": "ダンジョンの一部の階に、コイントスの賭けとオークションのイベントを追加しました。お金で装備を手に入れることができます。",
+   "ko": "던전 일부 층에 동전 던지기 도박과 경매 이벤트가 추가되어, 돈으로 장비를 얻을 수 있습니다.",
+   "ru": "На некоторых этажах подземелья появились пари с подбрасыванием монеты и аукцион, где можно купить снаряжение за деньги."
+  },
+  "hover_h": {
+   "tw": "名稱滑鼠移上去顯示說明",
+   "cn": "名称鼠标移上去显示说明",
+   "en": "Hover Tooltips for Names",
+   "ja": "名前にマウスを合わせると説明を表示",
+   "ko": "이름에 마우스를 올리면 설명 표시",
+   "ru": "Подсказки при наведении на названия"
+  },
+  "hover_p": {
+   "tw": "對話、選項與對話紀錄中出現的技能、狀態、道具名稱，以及關卡名稱，滑鼠移上去都會顯示說明。",
+   "cn": "对话、选项与对话记录中出现的技能、状态、道具名称，以及关卡名称，鼠标移上去都会显示说明。",
+   "en": "Hovering over skill, status effect, item and stage names in dialogue, choices and the dialogue log now shows their descriptions.",
+   "ja": "会話、選択肢、会話ログに出てくるスキル・状態・アイテム名やステージ名にマウスを合わせると、説明が表示されます。",
+   "ko": "대화, 선택지, 대화 기록에 나오는 스킬·상태·아이템 이름과 스테이지 이름에 마우스를 올리면 설명이 표시됩니다.",
+   "ru": "При наведении курсора на названия навыков, эффектов, предметов и этапов в диалогах, вариантах выбора и журнале диалогов теперь показывается описание."
+  },
+  "prison_h": {
+   "tw": "主畫面新增「俘虜」",
+   "cn": "主画面新增「俘虏」",
+   "en": "Captives Added to the Main Screen",
+   "ja": "メイン画面に「捕虜」を追加",
+   "ko": "메인 화면에 「포로」 추가",
+   "ru": "На главном экране появились «Пленники»"
+  },
+  "prison_p": {
+   "tw": "主畫面新增「俘虜」按鈕，可以瀏覽所有捕捉到的俘虜，依條件篩選與排序，點立繪即可與俘虜互動。",
+   "cn": "主画面新增「俘虏」按钮，可以浏览所有捕捉到的俘虏，依条件筛选与排序，点立绘即可与俘虏互动。",
+   "en": "A Captives button has been added to the main screen. Browse every captive you have caught, filter and sort them, and click a portrait to interact.",
+   "ja": "メイン画面に「捕虜」ボタンを追加しました。捕まえた捕虜をすべて一覧でき、条件で絞り込み・並べ替えができ、立ち絵をクリックするとやり取りできます。",
+   "ko": "메인 화면에 「포로」 버튼이 추가되었습니다. 포획한 모든 포로를 둘러보고 조건으로 필터·정렬할 수 있으며, 일러스트를 클릭하면 상호작용할 수 있습니다.",
+   "ru": "На главный экран добавлена кнопка «Пленники»: можно просматривать всех пойманных пленников, фильтровать и сортировать их, а нажатие на портрет открывает взаимодействие."
+  },
+  "fix_h": {
+   "tw": "問題修正",
+   "cn": "问题修正",
+   "en": "Bug Fixes",
+   "ja": "不具合の修正",
+   "ko": "버그 수정",
+   "ru": "Исправления"
+  },
+  "fix_p": {
+   "tw": "修正戰鬥結算時金錢與經驗加成偶爾少 1 的問題；關卡名稱過長時會自動縮小顯示。",
+   "cn": "修正战斗结算时金钱与经验加成偶尔少 1 的问题；关卡名称过长时会自动缩小显示。",
+   "en": "Fixed money and EXP bonuses at the end of battle occasionally coming up 1 short. Long stage names now shrink to fit.",
+   "ja": "戦闘終了時のお金と経験値のボーナスがまれに 1 少なくなる問題を修正しました。長いステージ名は自動で縮小表示されます。",
+   "ko": "전투 정산 시 돈과 경험치 보너스가 가끔 1 적게 들어오던 문제를 수정했습니다. 긴 스테이지 이름은 자동으로 축소되어 표시됩니다.",
+   "ru": "Исправлено: бонусы к деньгам и опыту по итогам боя иногда были меньше на 1. Длинные названия этапов теперь уменьшаются, чтобы поместиться."
+  }
+ }
+}
